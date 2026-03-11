@@ -99,13 +99,21 @@ ALWAYS end every single sentence and bullet point with a full stop (.)."""
                     full_ai_response += text_chunk
                     yield text_chunk  # Send the tiny piece of text to the frontend immediately
             
-            # 3. Once the stream is finished, save the complete AI response to the database
-            ai_msg_record = ChatMessage(sender="IntelliBlue", text=full_ai_response)
-            db.session.add(ai_msg_record)
-            db.session.commit()
-            
+        except GeneratorExit:
+            # Client closed the connection (User interrupted)
+            full_ai_response += "\n\n*(user interruption)*"
         except Exception as e:
-            yield f"\n[Connection Error: {str(e)}]"
+            error_msg = f"\n[Connection Error: {str(e)}]"
+            full_ai_response += error_msg
+            yield error_msg
+        finally:
+            # 3. Once the stream is finished or interrupted, save the AI response to the database
+            try:
+                ai_msg_record = ChatMessage(sender="IntelliBlue", text=full_ai_response)
+                db.session.add(ai_msg_record)
+                db.session.commit()
+            except Exception as db_e:
+                print(f"Failed to save to database: {db_e}")
 
     # Return the stream to the frontend
     return Response(stream_with_context(generate()), mimetype='text/plain')
@@ -223,7 +231,7 @@ Include these exact headings:
         parsed_severity = severity_match.group(1).capitalize() if severity_match else "Medium"
 
         new_alert = Alert(
-            title=f"AI Detection: {filename}",
+            title=f"Analysis of {filename}",
             description=analysis_result,
             severity=parsed_severity, # Now uses the dynamic severity
             status="Active"

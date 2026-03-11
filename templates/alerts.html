@@ -12,13 +12,13 @@
 
 <div class="space-y-6">
     {% for alert in alerts %}
-    <div class="bg-gray-800 rounded-lg border border-gray-700 shadow-lg overflow-hidden">
+    <div id="alert-{{ alert.title.split(': ', 1)[-1] }}" class="bg-gray-800 rounded-lg border border-gray-700 shadow-lg overflow-hidden">
         
         <div class="bg-gray-900 px-6 py-4 border-b border-gray-700 flex justify-between items-center">
             <div>
-                <h4 class="text-lg font-bold text-white">{{ alert.title }}</h4>
+                <h4 class="text-lg font-bold text-white">{{ alert.title.replace('AI Detection:', 'Analysis of') }}</h4>
                 <p class="text-xs text-gray-500 mt-1">
-                    <i class="fa-solid fa-clock mr-1"></i> Generated: {{ alert.date_created.strftime('%Y-%m-%d %H:%M') }}
+                    <i class="fa-solid fa-clock mr-1"></i> Generated: {{ alert.date_created.strftime('%Y-%m-%d %H:%M UTC') }}
                 </p>
             </div>
             <div class="flex space-x-3">
@@ -54,9 +54,6 @@
             </button>
         </div>
     </div>
-    {% endfor %}
-</div>
-    
     {% else %}
     <div class="bg-gray-800 rounded-lg p-10 text-center border border-gray-700 shadow-lg">
         <i class="fa-solid fa-shield-check text-green-500 text-5xl mb-4"></i>

@@ -31,6 +31,9 @@
         <form id="chatForm" class="flex space-x-4" onsubmit="sendMessage(event)">
             <input type="text" id="userInput" autocomplete="off" placeholder="Ask about an alert, request mitigation steps..." 
                    class="flex-1 bg-gray-800 text-white placeholder-gray-500 border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+            <button type="button" id="stopBtn" class="hidden bg-red-600 hover:bg-red-500 text-white px-6 py-3 rounded-lg font-semibold transition shadow-lg flex items-center" onclick="stopMessage()">
+                <span>Stop</span> <i class="fa-solid fa-stop ml-2"></i>
+            </button>
             <button type="submit" id="sendBtn" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold transition shadow-lg flex items-center">
                 <span>Send</span> <i class="fa-solid fa-paper-plane ml-2"></i>
             </button>
@@ -40,6 +43,7 @@
 
 <script>
 const chatWindow = document.getElementById('chatWindow');
+let abortController = null;
 
     // 1. Auto-parse history on page load
     window.onload = function() {
@@ -51,36 +55,45 @@ const chatWindow = document.getElementById('chatWindow');
         chatWindow.scrollTop = chatWindow.scrollHeight;
     };
 
+    function stopMessage() {
+        if (abortController) {
+            abortController.abort();
+        }
+    }
+
     async function sendMessage(event) {
         event.preventDefault();
         
         const inputField = document.getElementById('userInput');
         const message = inputField.value.trim();
         const sendBtn = document.getElementById('sendBtn');
+        const stopBtn = document.getElementById('stopBtn');
         
         if (!message) return;
 
         // Append User message
         inputField.value = '';
         appendMessage('User', message);
-        sendBtn.disabled = true;
-        sendBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
+        sendBtn.classList.add('hidden');
+        stopBtn.classList.remove('hidden');
 
         // Create an empty bubble for the AI response
         const aiBubbleId = appendMessage('IntelliBlue', '');
         const aiBubbleElement = document.getElementById(aiBubbleId);
 
+        abortController = new AbortController();
+        let rawMarkdown = ""; // We will accumulate the raw text here
+
         try {
             const response = await fetch('{{ url_for("api_chat") }}', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: message })
+                body: JSON.stringify({ message: message }),
+                signal: abortController.signal
             });
 
             const reader = response.body.getReader();
             const decoder = new TextDecoder('utf-8');
-            
-            let rawMarkdown = ""; // We will accumulate the raw text here
 
             while (true) {
                 const { done, value } = await reader.read();
@@ -89,17 +102,30 @@ const chatWindow = document.getElementById('chatWindow');
                 const chunkText = decoder.decode(value, { stream: true });
                 rawMarkdown += chunkText; 
                 
+                // Check if user is near the bottom BEFORE updating the content
+                const isScrolledToBottom = Math.abs(chatWindow.scrollHeight - chatWindow.clientHeight - chatWindow.scrollTop) < 50;
+                
                 // Parse the accumulated Markdown into HTML in real-time
                 aiBubbleElement.innerHTML = marked.parse(rawMarkdown);
                 
-                chatWindow.scrollTop = chatWindow.scrollHeight;
+                // Only auto-scroll if the user hasn't scrolled up
+                if (isScrolledToBottom) {
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
+                }
             }
         } catch (error) {
-            aiBubbleElement.innerText = "Error connecting to the backend.";
+            if (error.name !== 'AbortError') {
+                aiBubbleElement.innerText = "Error connecting to the backend.";
+            } else {
+                // User interrupted the fetch
+                rawMarkdown += "\n\n*(user interruption)*";
+                aiBubbleElement.innerHTML = marked.parse(rawMarkdown);
+            }
+        } finally {
+            sendBtn.classList.remove('hidden');
+            stopBtn.classList.add('hidden');
+            abortController = null;
         }
-
-        sendBtn.disabled = false;
-        sendBtn.innerHTML = '<span>Send</span> <i class="fa-solid fa-paper-plane ml-2"></i>';
     }
 
     // Helper function to draw chat bubbles
