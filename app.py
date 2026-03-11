@@ -175,8 +175,18 @@ def api_upload():
     if file.filename == '':
         return jsonify({"error": "No file selected"}), 400
 
-    filename = secure_filename(file.filename)
+    original_filename = secure_filename(file.filename)
+    filename = original_filename
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    
+    # Handle duplicate filenames
+    counter = 1
+    name, ext = os.path.splitext(original_filename)
+    while os.path.exists(filepath):
+        counter += 1
+        filename = f"{name}_{counter}{ext}"
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
     file.save(filepath)
 
     source_type, log_content = parse_security_file(filepath)
@@ -239,7 +249,7 @@ Include these exact headings:
         db.session.add(new_alert)
         db.session.commit()
 
-        return jsonify({"message": "Analysis complete", "alert_id": new_alert.id}), 200
+        return jsonify({"message": "Analysis complete", "alert_id": new_alert.id, "filename": filename}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500

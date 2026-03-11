@@ -78,11 +78,58 @@ let abortController = null;
         stopBtn.classList.remove('hidden');
 
         // Create an empty bubble for the AI response
-        const aiBubbleId = appendMessage('IntelliBlue', '');
+        const aiBubbleId = appendMessage('IntelliBlue', '<span class="text-gray-400 italic">Thinking<span id="loadingDots-' + Date.now() + '"></span></span>');
         const aiBubbleElement = document.getElementById(aiBubbleId);
+        
+        // Setup the animated dots logic
+        const dotsElement = aiBubbleElement.querySelector('span[id^="loadingDots-"]');
+        let dotCount = 0;
+        const dotsInterval = setInterval(() => {
+            if (dotsElement) {
+                dotCount = (dotCount + 1) % 4;
+                dotsElement.innerText = '.'.repeat(dotCount);
+            }
+        }, 400);
+
+        // Add a smooth fade-in reveal class to the bubble wrapper
+        aiBubbleElement.parentElement.classList.add('animate-fade-in');
 
         abortController = new AbortController();
         let rawMarkdown = ""; // We will accumulate the raw text here
+        let renderedMarkdown = ""; // The smoothly revealed text
+        let isStreaming = true;
+        let startedTyping = false;
+
+        // Smooth character-by-character trickle instead of blocky word jumps
+        const typeInterval = setInterval(() => {
+            if (renderedMarkdown.length < rawMarkdown.length) {
+                if (!startedTyping) {
+                    clearInterval(dotsInterval);
+                    startedTyping = true;
+                }
+                
+                // Reveal a few characters at a time based on how far behind the buffer is
+                const charsToAdd = Math.max(1, Math.ceil((rawMarkdown.length - renderedMarkdown.length) / 4));
+                renderedMarkdown += rawMarkdown.substring(renderedMarkdown.length, renderedMarkdown.length + charsToAdd);
+                
+                const isScrolledToBottom = Math.abs(chatWindow.scrollHeight - chatWindow.clientHeight - chatWindow.scrollTop) < 50;
+                
+                // Parse and append a fading cursor
+                let html = marked.parse(renderedMarkdown);
+                if (isStreaming) {
+                    html = html.replace(/<\/p>$/, ' <span class="inline-block w-2 h-4 bg-blue-400/70 animate-pulse rounded-sm align-middle ml-1"></span></p>');
+                }
+                aiBubbleElement.innerHTML = html;
+                
+                if (isScrolledToBottom) {
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
+                }
+            } else if (!isStreaming) {
+                // Final clean render without cursor once stream is fully caught up
+                aiBubbleElement.innerHTML = marked.parse(renderedMarkdown);
+                clearInterval(typeInterval);
+            }
+        }, 16); // ~60fps smooth rendering
 
         try {
             const response = await fetch('{{ url_for("api_chat") }}', {
@@ -99,29 +146,19 @@ let abortController = null;
                 const { done, value } = await reader.read();
                 if (done) break;
                 
-                const chunkText = decoder.decode(value, { stream: true });
-                rawMarkdown += chunkText; 
-                
-                // Check if user is near the bottom BEFORE updating the content
-                const isScrolledToBottom = Math.abs(chatWindow.scrollHeight - chatWindow.clientHeight - chatWindow.scrollTop) < 50;
-                
-                // Parse the accumulated Markdown into HTML in real-time
-                aiBubbleElement.innerHTML = marked.parse(rawMarkdown);
-                
-                // Only auto-scroll if the user hasn't scrolled up
-                if (isScrolledToBottom) {
-                    chatWindow.scrollTop = chatWindow.scrollHeight;
-                }
+                rawMarkdown += decoder.decode(value, { stream: true });
             }
         } catch (error) {
             if (error.name !== 'AbortError') {
+                clearInterval(dotsInterval);
                 aiBubbleElement.innerText = "Error connecting to the backend.";
             } else {
                 // User interrupted the fetch
                 rawMarkdown += "\n\n*(user interruption)*";
-                aiBubbleElement.innerHTML = marked.parse(rawMarkdown);
             }
         } finally {
+            clearInterval(dotsInterval); // ensure it's cleared if stopped immediately
+            isStreaming = false; // signals the interval to shut down naturally
             sendBtn.classList.remove('hidden');
             stopBtn.classList.add('hidden');
             abortController = null;
