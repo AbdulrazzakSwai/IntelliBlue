@@ -1,6 +1,6 @@
 from scapy.all import rdpcap
 from werkzeug.utils import secure_filename
-from flask import Flask, render_template, request, jsonify, redirect, url_for, Response, stream_with_context
+from flask import Flask, render_template, request, jsonify, redirect, url_for, Response, stream_with_context, send_file
 from models import db, LogFile, Alert, ChatSession, ChatMessage
 import csv
 import re
@@ -8,6 +8,12 @@ import json
 import requests
 import os
 import uuid
+import markdown
+import io
+from fpdf import FPDF, HTMLMixin
+
+class PDF(FPDF, HTMLMixin):
+    pass
 
 app = Flask(__name__)
 
@@ -81,6 +87,45 @@ def resolve_alert(alert_id):
     alert_to_resolve.status = "Resolved"
     db.session.commit()
     return redirect(url_for('alerts'))
+
+@app.route('/report/<int:report_id>/restore', methods=['POST'])
+def restore_alert(report_id):
+    alert_to_restore = Alert.query.get_or_404(report_id)
+    alert_to_restore.status = "Active"
+    db.session.commit()
+    return redirect(url_for('reports'))
+
+@app.route('/report/<int:report_id>/export', methods=['GET'])
+def export_report_pdf(report_id):
+    alert = Alert.query.get_or_404(report_id)
+    
+    html_content = f"""
+    <h1 align="center">{alert.title}</h1>
+    <p><b>Date Generated:</b> {alert.date_created.strftime('%Y-%m-%d %H:%M UTC')}</p>
+    <p><b>Severity Level:</b> <font color="{'red' if alert.severity == 'High' else 'orange' if alert.severity == 'Medium' else 'green' if alert.severity == 'Low' else 'blue'}">{alert.severity}</font> | <b>Status:</b> {alert.status}</p>
+    <hr>
+    """
+    html_content += markdown.markdown(alert.description)
+    
+    pdf = PDF()
+    pdf.add_page()
+    pdf.set_font("helvetica", size=11)
+    
+    try:
+        pdf.write_html(html_content)
+    except Exception as e:
+        # Fallback if html parsing fails natively for some weird character
+        pdf.set_font("helvetica", size=11)
+        pdf.multi_cell(0, 5, txt=f"Report: {alert.title}\nSeverity: {alert.severity}\n\n{alert.description}")
+        
+    pdf_bytes = pdf.output()
+    
+    return send_file(
+        io.BytesIO(pdf_bytes),
+        mimetype='application/pdf',
+        as_attachment=True,
+        download_name=f"{re.sub(r'[^a-zA-Z0-9]', '_', alert.title)}.pdf"
+    )
 
 @app.route('/chat')
 def chat_redirect():

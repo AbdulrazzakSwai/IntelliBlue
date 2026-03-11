@@ -28,18 +28,34 @@
                         <i class="fa-solid fa-file-pdf text-red-400 mr-2"></i> {{ report.title }}
                     </td>
                     <td class="px-6 py-4">
-                        <span class="bg-red-900 text-red-300 text-xs font-bold px-2 py-1 rounded border border-red-700">
+                        {% if report.severity == 'High' %}
+                        <span class="px-3 py-1 bg-red-900 text-red-300 text-xs font-bold uppercase rounded border border-red-700 shadow-inner">
                             {{ report.severity }}
                         </span>
+                        {% elif report.severity == 'Medium' %}
+                        <span class="px-3 py-1 bg-yellow-900 text-yellow-300 text-xs font-bold uppercase rounded border border-yellow-700 shadow-inner">
+                            {{ report.severity }}
+                        </span>
+                        {% elif report.severity == 'Low' %}
+                        <span class="px-3 py-1 bg-green-900 text-green-300 text-xs font-bold uppercase rounded border border-green-700 shadow-inner">
+                            {{ report.severity }}
+                        </span>
+                        {% else %}
+                        <span class="px-3 py-1 bg-cyan-900 text-cyan-300 text-xs font-bold uppercase rounded border border-cyan-700 shadow-inner">
+                            {{ report.severity }}
+                        </span>
+                        {% endif %}
                     </td>
                     <td class="px-6 py-4">{{ report.date_created.strftime('%Y-%m-%d %H:%M UTC') }}</td>
                     <td class="px-6 py-4 text-right space-x-3">
-                        <button onclick="viewReport('{{ report.id }}')" class="text-blue-400 hover:text-blue-300 font-semibold transition">
-                            <i class="fa-solid fa-eye mr-1"></i> View
-                        </button>
-                        <button onclick="window.print()" class="text-green-400 hover:text-green-300 font-semibold transition">
-                            <i class="fa-solid fa-download mr-1"></i> Download PDF
-                        </button>
+                        <form action="{{ url_for('restore_alert', report_id=report.id) }}" method="POST" class="inline">
+                            <button type="submit" class="text-blue-400 hover:text-blue-300 font-semibold transition inline-flex items-center">
+                                <i class="fa-solid fa-arrow-rotate-left mr-1"></i> Reopen Alert
+                            </button>
+                        </form>
+                        <a href="{{ url_for('export_report_pdf', report_id=report.id) }}" class="text-green-400 hover:text-green-300 font-semibold transition inline-flex items-center">
+                            <i class="fa-solid fa-download mr-1"></i> Export Report
+                        </a>
                         <form action="{{ url_for('delete_report', report_id=report.id) }}" method="POST" class="inline" onsubmit="showDeleteModal(event, this, 'Are you sure you want to permanently delete this generated report?');">
                             <button type="submit" class="text-red-500 hover:text-red-400 font-semibold transition">
                                 <i class="fa-solid fa-trash-can mr-1"></i> Delete
@@ -47,6 +63,34 @@
                         </form>
                     </td>
                 </tr>
+
+                <!-- Hidden container containing the full report exactly like Active Alerts so it can be extracted to PDF seamlessly -->
+                <div id="report-container-{{ report.id }}" class="hidden bg-gray-800 rounded-lg border border-gray-700 shadow-lg overflow-hidden relative">
+                    <div class="bg-gray-900 px-6 py-4 border-b border-gray-700 flex justify-between items-center">
+                        <div>
+                            <h4 class="text-lg font-bold text-white">{{ report.title }}</h4>
+                            <p class="text-xs text-gray-500 mt-1">
+                                <i class="fa-solid fa-clock mr-1"></i> Archived: {{ report.date_created.strftime('%Y-%m-%d %H:%M UTC') }}
+                            </p>
+                        </div>
+                        <div class="flex space-x-3">
+                            {% if report.severity == 'High' %}
+                            <span class="px-3 py-1 bg-red-900 text-red-300 text-xs font-bold uppercase rounded border border-red-700 shadow-inner">Severity: {{ report.severity }}</span>
+                            {% elif report.severity == 'Medium' %}
+                            <span class="px-3 py-1 bg-yellow-900 text-yellow-300 text-xs font-bold uppercase rounded border border-yellow-700 shadow-inner">Severity: {{ report.severity }}</span>
+                            {% elif report.severity == 'Low' %}
+                            <span class="px-3 py-1 bg-green-900 text-green-300 text-xs font-bold uppercase rounded border border-green-700 shadow-inner">Severity: {{ report.severity }}</span>
+                            {% else %}
+                            <span class="px-3 py-1 bg-cyan-900 text-cyan-300 text-xs font-bold uppercase rounded border border-cyan-700 shadow-inner">Severity: {{ report.severity }}</span>
+                            {% endif %}
+                            <span class="px-3 py-1 bg-blue-900 text-blue-300 text-xs font-bold uppercase rounded border border-blue-700 shadow-inner">Status: {{ report.status }}</span>
+                        </div>
+                    </div>
+                    <div class="p-6 bg-gray-800">
+                        <div class="markdown-content prose prose-invert prose-base max-w-none text-base text-gray-300">{{ report.description }}</div>
+                    </div>
+                </div>
+
                 {% else %}
                 <tr>
                     <td colspan="4" class="px-6 py-8 text-center text-gray-500">
@@ -60,18 +104,14 @@
     </div>
 </div>
 
-<style>
-    @media print {
-        aside, header, button { display: none !important; }
-        body { background-color: white !important; color: black !important; }
-        .bg-gray-800, .bg-gray-900 { background-color: white !important; border: none !important; color: black !important;}
-        .text-white, .text-gray-400 { color: black !important; }
-    }
-</style>
-
 <script>
-    function viewReport(reportId) {
-        alert("In a full enterprise environment, this would open the detailed view for Report ID: " + reportId);
-    }
+    // Parse the hidden markdown components
+    window.onload = function() {
+        const markdownDivs = document.querySelectorAll('.markdown-content');
+        markdownDivs.forEach(div => {
+            const rawText = div.textContent.trim();
+            div.innerHTML = marked.parse(rawText);
+        });
+    };
 </script>
 {% endblock %}

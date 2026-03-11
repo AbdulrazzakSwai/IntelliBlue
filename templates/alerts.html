@@ -12,8 +12,9 @@
 
 <div class="space-y-6">
     {% for alert in alerts %}
-    <div id="alert-{{ alert.title.replace('AI Detection: ', '').replace('Analysis of ', '') }}" class="bg-gray-800 rounded-lg border border-gray-700 shadow-lg overflow-hidden">
-        
+    <div id="alert-container-{{ alert.id }}" class="bg-gray-800 rounded-lg border border-gray-700 shadow-lg overflow-hidden relative">
+        <a id="alert-{{ alert.title.replace('AI Detection: ', '').replace('Analysis of ', '') }}" class="absolute -top-20"></a>
+
         <div class="bg-gray-900 px-6 py-4 border-b border-gray-700 flex justify-between items-center">
             <div>
                 <h4 class="text-lg font-bold text-white">{{ alert.title.replace('AI Detection:', 'Analysis of') }}</h4>
@@ -54,9 +55,9 @@
                     <i class="fa-solid fa-check mr-1"></i> Mark as Resolved
                 </button>
             </form>
-            <button class="text-sm text-blue-400 hover:text-blue-300 font-semibold transition flex items-center">
+            <a href="{{ url_for('export_report_pdf', report_id=alert.id) }}" class="text-sm text-blue-400 hover:text-blue-300 font-semibold transition flex items-center">
                 <i class="fa-solid fa-download mr-1"></i> Export Report
-            </button>
+            </a>
         </div>
     </div>
     {% else %}
@@ -74,7 +75,7 @@
         const markdownDivs = document.querySelectorAll('.markdown-content');
         markdownDivs.forEach(div => {
             // .trim() destroys the HTML indentation spaces before parsing
-            const rawText = div.textContent.trim(); 
+            const rawText = div.textContent.trim();
             div.innerHTML = marked.parse(rawText);
         });
     };
