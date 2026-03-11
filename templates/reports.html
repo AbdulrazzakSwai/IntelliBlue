@@ -66,7 +66,6 @@
                     </td>
                 </tr>
 
-                <!-- Hidden container containing the full report exactly like Active Alerts so it can be extracted to PDF seamlessly -->
                 <div id="report-container-{{ report.id }}" class="hidden bg-gray-800 rounded-lg border border-gray-700 shadow-lg overflow-hidden relative">
                     <div class="bg-gray-900 px-6 py-4 border-b border-gray-700 flex justify-between items-center">
                         <div>
@@ -107,7 +106,6 @@
 </div>
 
 <script>
-    // Parse the hidden markdown components
     window.onload = function() {
         const markdownDivs = document.querySelectorAll('.markdown-content');
         markdownDivs.forEach(div => {

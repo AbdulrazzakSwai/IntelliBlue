@@ -59,7 +59,6 @@
         </div>
 
         <div class="p-6 bg-gray-800/50 backdrop-blur-sm relative inner-shadow-sm">
-            <!-- decorative background elements -->
             <div class="absolute right-0 top-0 opacity-5 pointer-events-none p-4">
                 <i class="fa-solid fa-bug text-9xl text-white"></i>
             </div>
@@ -96,11 +95,9 @@
 </div>
 
 <script>
-    // 1. Parse the Markdown content into styled HTML when the page loads
     window.onload = function() {
         const markdownDivs = document.querySelectorAll('.markdown-content');
         markdownDivs.forEach(div => {
-            // .trim() destroys the HTML indentation spaces before parsing
             const rawText = div.textContent.trim();
             div.innerHTML = marked.parse(rawText);
         });

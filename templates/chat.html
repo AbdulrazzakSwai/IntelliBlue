@@ -64,20 +64,16 @@ const activeSessionId = "{{ active_session.id }}";
 const chatWindow = document.getElementById('chatWindow');
 let abortController = null;
 
-    // 1. Auto-parse history on page load
     window.onload = function() {
         const historyBubbles = document.querySelectorAll('.ai-message-content');
         historyBubbles.forEach(bubble => {
-            const rawText = bubble.textContent; // <-- CHANGE THIS LINE
+            const rawText = bubble.textContent;
             bubble.innerHTML = marked.parse(rawText);
             
-            // If it's the welcome message (marked by the unique data-welcome attribute), animate it!
             if (bubble.hasAttribute('data-welcome')) {
-                // Clear the parsed text immediately to prepare for typing
                 const targetText = rawText;
                 bubble.innerHTML = '';
                 
-                // Block user input while typing
                 const userInputField = document.getElementById('userInput');
                 const userSendBtn = document.getElementById('sendBtn');
                 const alertContextSelect = document.getElementById('alertContext');
@@ -89,7 +85,6 @@ let abortController = null;
                 userSendBtn.classList.add('opacity-50', 'cursor-not-allowed');
                 alertContextSelect.classList.add('opacity-50', 'cursor-not-allowed');
 
-                // Keep UI smooth by revealing characters
                 let renderedWelcome = "";
                 let charIndex = 0;
                 
@@ -103,11 +98,9 @@ let abortController = null;
                         charIndex += charsToReveal;
                         chatWindow.scrollTop = chatWindow.scrollHeight;
                     } else {
-                        // Done typing, remove cursor
                         bubble.innerHTML = marked.parse(renderedWelcome);
                         clearInterval(welcomeInterval);
                         
-                        // Restore user input
                         userInputField.disabled = false;
                         userSendBtn.disabled = false;
                         alertContextSelect.disabled = false;
@@ -116,11 +109,9 @@ let abortController = null;
                         userSendBtn.classList.remove('opacity-50', 'cursor-not-allowed');
                         alertContextSelect.classList.remove('opacity-50', 'cursor-not-allowed');
                         
-                        // Auto-populate the input query if an alert ID was seamlessly passed via URL param
                         const urlParams = new URLSearchParams(window.location.search);
                         const autoAlertId = urlParams.get('auto_alert');
                         if (autoAlertId) {
-                            // Find if it exists in the select dropdown options
                             let selectHasOption = Array.from(alertContextSelect.options).some(option => option.value === autoAlertId);
                             if (selectHasOption) {
                                 alertContextSelect.value = autoAlertId;
@@ -130,7 +121,7 @@ let abortController = null;
                         
                         userInputField.focus();
                     }
-                }, 10); // Faster visual tick interval
+                }, 10);
             }
         });
         chatWindow.scrollTop = chatWindow.scrollHeight;
@@ -147,7 +138,6 @@ let abortController = null;
         if (sessionLink) {
             const titleSpan = sessionLink.querySelector('.sidebar-title-text');
             if (titleSpan) {
-                // Clear and type out the new title
                 titleSpan.innerHTML = '';
                 let index = 0;
                 const titleInterval = setInterval(() => {
@@ -157,7 +147,7 @@ let abortController = null;
                     } else {
                         clearInterval(titleInterval);
                     }
-                }, 50); // fast typing speed for the title
+                }, 50);
             }
         }
     }
@@ -174,29 +164,24 @@ let abortController = null;
         
         if (!message) return;
 
-        // Append User message
         inputField.value = '';
         
-        // Show attached alert in UI if one was selected
         let displayMessage = message;
         if (selectedAlertId) {
             const selectedText = alertContextSelect.options[alertContextSelect.selectedIndex].text.replace('Attach: ', '');
             displayMessage = message + `\n\n*(Attached Reference: ${selectedText})*`;
-            alertContextSelect.value = ""; // Reset dropdown after sending
+            alertContextSelect.value = "";
         }
         
         appendMessage('User', displayMessage);
         sendBtn.classList.add('hidden');
         stopBtn.classList.remove('hidden');
 
-        // Small delay to make interaction feel more natural before AI "starts typing"
         await new Promise(resolve => setTimeout(resolve, 300));
 
-        // Create an empty bubble for the AI response
         const aiBubbleId = appendMessage('IntelliBlue', '<span class="text-gray-400 italic">Thinking<span id="loadingDots-' + Date.now() + '"></span></span>');
         const aiBubbleElement = document.getElementById(aiBubbleId);
         
-        // Setup the animated dots logic
         const dotsElement = aiBubbleElement.querySelector('span[id^="loadingDots-"]');
         let dotCount = 0;
         const dotsInterval = setInterval(() => {
@@ -206,30 +191,27 @@ let abortController = null;
             }
         }, 400);
 
-        // Add a smooth fade-in reveal class to the bubble wrapper
         aiBubbleElement.parentElement.classList.add('animate-fade-in');
 
         abortController = new AbortController();
-        let rawMarkdown = ""; // We will accumulate the raw text here
-        let renderedMarkdown = ""; // The smoothly revealed text
+        let rawMarkdown = "";
+        let renderedMarkdown = "";
         let sessionTitle = null;
         let isStreaming = true;
         let startedTyping = false;
 
-        // Smooth character-by-character trickle instead of blocky word jumps
         const typeInterval = setInterval(() => {
             let activeRaw = rawMarkdown;
 
-            // Instantly transition buttons and finish the visual text generation when the main stream ends
             if (activeRaw.includes('|||END_STREAM|||')) {
                 sendBtn.classList.remove('hidden');
                 stopBtn.classList.add('hidden');
-                activeRaw = activeRaw.replace('|||END_STREAM|||', ''); // Erase it so it never types
+                activeRaw = activeRaw.replace('|||END_STREAM|||', '');
             }
 
             if (activeRaw.includes('|||TITLE|||')) {
                 const parts = activeRaw.split('|||TITLE|||');
-                activeRaw = parts[0]; // Mask the tag from typing out into the chat bubble
+                activeRaw = parts[0];
                 if (!sessionTitle && parts[1].length > 0) {
                     sessionTitle = parts[1];
                     updateSidebarTitle(sessionTitle);
@@ -242,13 +224,11 @@ let abortController = null;
                     startedTyping = true;
                 }
                 
-                // Reveal a few characters at a time based on how far behind the buffer is
                 const charsToAdd = Math.max(1, Math.ceil((activeRaw.length - renderedMarkdown.length) / 4));
                 renderedMarkdown += activeRaw.substring(renderedMarkdown.length, renderedMarkdown.length + charsToAdd);
                 
                 const isScrolledToBottom = Math.abs(chatWindow.scrollHeight - chatWindow.clientHeight - chatWindow.scrollTop) < 50;
                 
-                // Parse and append a fading cursor
                 let html = marked.parse(renderedMarkdown);
                 if (isStreaming) {
                     html = html.replace(/<\/p>$/, ' <span class="inline-block w-2 h-4 bg-blue-400/70 animate-pulse rounded-sm align-middle ml-1"></span></p>');
@@ -259,11 +239,10 @@ let abortController = null;
                     chatWindow.scrollTop = chatWindow.scrollHeight;
                 }
             } else if (!isStreaming) {
-                // Final clean render without cursor once stream is fully caught up
                 aiBubbleElement.innerHTML = marked.parse(renderedMarkdown);
                 clearInterval(typeInterval);
             }
-        }, 16); // ~60fps smooth rendering
+        }, 16);
 
         try {
             const response = await fetch('{{ url_for("api_chat") }}', {
@@ -289,26 +268,19 @@ let abortController = null;
                 sendBtn.classList.remove('hidden');
                 stopBtn.classList.add('hidden');
             } else {
-                // User interrupted the fetch
                 rawMarkdown += "\n\n*(user interruption)*";
                 
-                // Instantly flip the button state since we won't receive the END_STREAM tag naturally
                 sendBtn.classList.remove('hidden');
                 stopBtn.classList.add('hidden');
                 
-                // If the stream interrupted before the backend sent the TITLE tag, we construct the fallback title directly on the frontend.
                 const currentSessionLink = document.getElementById('sidebar-session-' + activeSessionId);
                 if (!sessionTitle && currentSessionLink) {
                     const currentTitle = currentSessionLink.querySelector('.sidebar-title-text').textContent;
-                    // Because Flask only saves "Generating Title..." to backend and doesn't push it early down the socket, 
-                    // the front-end will actually just still say "New Chat". Let's check for that instead!
                     if (currentTitle === "New Chat" || currentTitle === "Generating Title...") {
                         const words = message.split(' ').filter(w => w.trim() !== '');
                         
-                        // First strip markdown from the raw words so the FIRST letter is actually a letter, not a * or #
                         const cleanWords = words.slice(0, 3).map(w => w.replace(/[*_#`~>\[\]]/g, ''));
                         
-                        // Then safely capitalize the clean words
                         let capitalizedWords = cleanWords.map(w => w ? w.charAt(0).toUpperCase() + w.slice(1).toLowerCase() : "");
                         
                         let fallbackTitle = capitalizedWords.join(' ') + (words.length > 3 ? "..." : "");
@@ -323,14 +295,12 @@ let abortController = null;
                 }
             }
         } finally {
-            clearInterval(dotsInterval); // ensure it's cleared if stopped immediately
-            isStreaming = false; // signals the interval to shut down naturally
-            // We moved the send / stop button resetting to the frontend loop above so they pop up instantly!
+            clearInterval(dotsInterval);
+            isStreaming = false;
             abortController = null;
         }
     }
 
-    // Helper function to draw chat bubbles
     function appendMessage(sender, text) {
         const wrapper = document.createElement('div');
         const uniqueId = 'msg-' + Date.now();
@@ -342,7 +312,6 @@ let abortController = null;
             `;
         } else {
             wrapper.className = 'flex justify-start';
-            // Notice the "prose prose-invert" class added here. This triggers Tailwind's beautiful Markdown styling!
             wrapper.innerHTML = `
                 <div class="bg-gray-700 text-gray-200 p-4 rounded-r-lg rounded-bl-lg max-w-2xl shadow border border-gray-600">
                     <span class="font-bold text-blue-400 text-xs uppercase block mb-2 border-b border-gray-600 pb-1">

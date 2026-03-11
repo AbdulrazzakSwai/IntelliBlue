@@ -19,9 +19,9 @@
                     colors: {
                         gray: {
                             850: '#1f2937', 
-                            900: '#0f172a', /* slate-900 */
-                            800: '#1e293b', /* slate-800 */
-                            700: '#334155', /* slate-700 */
+                            900: '#0f172a',
+                            800: '#1e293b',
+                            700: '#334155',
                         },
                         cyber: {
                             blue: '#0ea5e9',
@@ -41,28 +41,24 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* Custom scrollbar to match the dark theme */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #1f2937; }
         ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
 
-        /* Custom styling for inline AI commands (Markdown backticks) */
         .prose code {
-            color: #ef4444 !important; /* Tailwind Red-500 */
+            color: #ef4444 !important;
             font-family: 'Courier New', Courier, monospace !important;
             background-color: #111827 !important; 
             padding: 0.2rem 0.4rem !important;
             border-radius: 0.25rem !important;
-            font-weight: 500 !important; /* Reduced from 600 to 500 for a cleaner look */
+            font-weight: 500 !important;
         }
 
-        /* Removes the default pseudo-backticks Tailwind tries to add */
         .prose code::before, .prose code::after {
             content: none !important;
         }
 
-        /* Prevents massive multi-line script blocks from turning entirely red */
         .prose pre code {
             color: #e5e7eb !important;
             background-color: transparent !important;
@@ -70,7 +66,6 @@
             font-weight: normal !important;
         }
 
-        /* Smooth fade-in for chat bubbles */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -113,7 +108,6 @@
                 <i class="fa-solid fa-plus mr-2 group-hover:rotate-90 transition-transform duration-300"></i> New Chat
             </a>
 
-            <!-- Directly embedded Session List -->
             <div class="px-2 mt-2 space-y-1 flex-1 overflow-y-auto min-h-0">
                 {% for s in global_chat_sessions %}
                 <div class="group relative flex items-center">
@@ -153,7 +147,6 @@
         </div>
     </main>
 
-    <!-- Custom Delete Modal -->
     <div id="customDeleteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity">
         <div class="modal-content transform scale-95 opacity-0 transition-all duration-200 bg-gray-900 border border-red-900/50 rounded-xl shadow-[0_0_30px_rgba(220,38,38,0.15)] p-8 w-96 text-center">
             <div class="text-red-500 mb-4 drop-shadow-[0_0_10px_rgba(239,68,68,0.8)]">
@@ -172,21 +165,18 @@
         let formToSubmit = null;
 
         function showDeleteModal(event, formElement, message) {
-            event.preventDefault(); // Stop normal submission
+            event.preventDefault();
 
             const modal = document.getElementById('customDeleteModal');
             const msgEl = document.getElementById('customDeleteModalMsg');
             msgEl.textContent = message;
             
-            // show modal
             modal.classList.remove('hidden');
-            // small delay for animation
             setTimeout(() => {
                 modal.querySelector('.modal-content').classList.remove('scale-95', 'opacity-0');
                 modal.querySelector('.modal-content').classList.add('scale-100', 'opacity-100');
             }, 10);
 
-            // Save form element
             formToSubmit = formElement;
         }
 
