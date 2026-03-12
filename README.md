@@ -38,8 +38,7 @@
    - [Chatting with the AI Assistant](#chatting-with-the-ai-assistant)
    - [Reports & Exports](#reports--exports)
    - [Test Files](#test-files)
-6. [Project Structure](#project-structure)
-7. [Security Considerations](#security-considerations)
+6. [Security Considerations](#security-considerations)
 
 ---
 
@@ -274,46 +273,6 @@ IntelliBlue ships with sample security log files in the `assets/test_files/` dir
 | `web_access.log`       | LOG  | Web server access logs with HTTP requests                      |
 
 Upload any of these files from the **Log Management** page to see IntelliBlue generate a full incident analysis report.
-
----
-
-## Project Structure
-
-```
-IntelliBlue/
-├── app.py                  # Main Flask application (routes, API, LLM integration)
-├── models.py               # SQLAlchemy database models
-├── requirements.txt        # Python dependencies
-├── windows_install.bat     # Automated Windows installer
-├── linux_install.sh        # Automated Linux installer
-├── README.md               # This file
-│
-├── assets/                 # Static assets
-│   ├── intelliblue_logo.png
-│   ├── favicon/
-│   │   ├── favicon.ico
-│   │   ├── favicon-16x16.png
-│   │   └── favicon-32x32.png
-│   └── test_files/         # Sample security logs for testing
-│       ├── auth_secure.txt
-│       ├── c2_beacon.pcap
-│       ├── edr_ransomware.json
-│       ├── firewall_traffic.csv
-│       └── web_access.log
-│
-├── templates/              # Jinja2 HTML templates
-│   ├── base.html           # Shared layout (sidebar, navigation, meta)
-│   ├── dashboard.html      # SOC dashboard overview
-│   ├── logs.html           # Log upload and management
-│   ├── alerts.html         # Active alert triage
-│   ├── reports.html        # Archived reports and false positives
-│   └── chat.html           # AI chatbot interface
-│
-├── instance/               # SQLite database (auto-generated)
-│   └── intelliblue.db
-│
-└── uploads/                # Temporary file storage (auto-cleaned)
-```
 
 ---
 
