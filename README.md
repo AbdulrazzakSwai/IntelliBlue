@@ -1,0 +1,336 @@
+<p align="center">
+  <img src="assets/intelliblue_logo.png" alt="IntelliBlue Logo" width="120"/>
+</p>
+
+<h1 align="center">IntelliBlue</h1>
+
+<p align="center">
+  <b>AI-Powered Security Operations Center Platform</b><br>
+  <i>Threat Hunting · Incident Response · Digital Forensics</i>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.10+-blue?logo=python&logoColor=white" alt="Python"/>
+  <img src="https://img.shields.io/badge/Flask-3.0-lightgrey?logo=flask" alt="Flask"/>
+  <img src="https://img.shields.io/badge/LLM-Llama_3-green?logo=meta" alt="Llama 3"/>
+  <img src="https://img.shields.io/badge/Ollama-Local_AI-black?logo=ollama" alt="Ollama"/>
+  <img src="https://img.shields.io/badge/License-MIT-yellow" alt="License"/>
+</p>
+
+---
+
+## Table of Contents
+
+1. [About the Project](#about-the-project)
+2. [Features](#features)
+   - [AI Chatbot](#ai-chatbot)
+   - [Smart Log Analysis](#smart-log-analysis)
+   - [Integrated Capabilities](#integrated-capabilities)
+3. [Tech Stack](#tech-stack)
+4. [Installation](#installation)
+   - [Windows (Automated)](#windows-automated-install)
+   - [Linux (Automated)](#linux-automated-install)
+   - [Manual Installation](#manual-installation)
+5. [Usage Guide](#usage-guide)
+   - [Dashboard](#dashboard)
+   - [Uploading & Analyzing Logs](#uploading--analyzing-logs)
+   - [Managing Alerts](#managing-alerts)
+   - [Chatting with the AI Assistant](#chatting-with-the-ai-assistant)
+   - [Reports & Exports](#reports--exports)
+   - [Test Files](#test-files)
+6. [Project Structure](#project-structure)
+7. [Security Considerations](#security-considerations)
+
+---
+
+## About the Project
+
+**IntelliBlue** is a fully local, AI-powered Security Operations Center (SOC) platform designed for cybersecurity analysts, students, and enthusiasts. It combines a modern web dashboard with a locally-hosted Large Language Model (Llama 3 via Ollama) to deliver real-time threat analysis, interactive incident investigation, and structured incident reporting — all without sending a single byte of data to the cloud.
+
+### What It Does
+
+- **Automated Log Analysis** — Upload SIEM exports, EDR telemetry, firewall logs, or packet captures and receive a comprehensive AI-generated Incident Report complete with an executive summary, severity rating, IOC extraction, MITRE ATT&CK mapping, impact assessment, and remediation steps.
+- **SOC AI Assistant** — A conversational chatbot with deep cybersecurity expertise. Ask it to explain alerts, draft mitigation plans, analyze threat intelligence, or investigate indicators of compromise. It remembers conversation context and can reference any active alert.
+- **Alert Triage Workflow** — Manage alerts through a full lifecycle: Active → Resolved or False Positive, with severity filtering, PDF export, and one-click restoration.
+- **Dashboard Overview** — A real-time SOC dashboard showing ingested log counts, active alert totals, AI engine status, and recent alerts at a glance.
+
+### Underlying Infrastructure
+
+| Layer               | Technology                                         |
+| ------------------- | -------------------------------------------------- |
+| **Backend**         | Flask 3.0, Flask-SQLAlchemy, Python 3.10+          |
+| **Database**        | SQLite (local, zero-config)                        |
+| **AI Engine**       | Ollama running Llama 3 (8B) locally                |
+| **Network Parsing** | Scapy (PCAP/PCAPNG analysis)                       |
+| **PDF Generation**  | fpdf2 with HTML rendering                          |
+| **Frontend**        | Tailwind CSS, Marked.js, DOMPurify, Font Awesome 6 |
+| **Fonts**           | Space Grotesk (headings), Inter (body)             |
+
+> **100% Local & Private** — IntelliBlue runs entirely on your machine. No API keys, no cloud services, no telemetry. Your security data never leaves your device.
+
+---
+
+## Features
+
+### AI Chatbot
+
+| Feature                          | Description                                                                                                                                                                |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Streaming Responses**          | AI responses are streamed in real time with a smooth typewriter effect — no waiting for the full answer to generate.                                                       |
+| **Response Interruption**        | A STOP button lets you halt the AI mid-response if you already have what you need.                                                                                         |
+| **Regenerate Response**          | Didn't like the answer? A "Resend Last Prompt" button re-sends your last message with higher creativity for a fresh response.                                              |
+| **Conversation Memory**          | The AI retains the last 10 messages in each session for contextual follow-up questions and multi-turn investigations.                                                      |
+| **Markdown Rendering**           | Responses are rendered with full Markdown support — code blocks, tables, bold, lists — sanitized via DOMPurify for safety.                                                 |
+| **Smart Chat Titles**            | After your first exchange, the AI auto-generates a concise 3–6 word title for the chat (e.g., "Phishing Email Analysis") in the background without blocking your workflow. |
+| **Session Management**           | Create unlimited chat sessions, switch between them from the sidebar, and delete sessions you no longer need.                                                              |
+| **Welcome Message**              | Every new chat opens with an animated welcome message from the AI assistant.                                                                                               |
+| **Duplicate Session Prevention** | The app won't let you create a new empty chat if one already exists — keeps your sidebar clean.                                                                            |
+
+### Smart Log Analysis
+
+| Feature                          | Description                                                                                                                                                                                      |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Multi-Format Support**         | Upload and analyze `.csv`, `.json`, `.pcap`, `.pcapng`, `.log`, and `.txt` security log files.                                                                                                   |
+| **Structured Incident Reports**  | Every analysis produces a formal report with: Executive Summary, Severity Level, Artifact Details, Analysis Findings, IOCs, Impact Assessment, Remediation Steps, and False Positive Assessment. |
+| **IOC Defanging**                | All IP addresses and URLs in reports are automatically defanged (e.g., `1.2.3.4` → `1[.]2[.]3[.]4`) to prevent accidental clicks.                                                                |
+| **MITRE ATT&CK Mapping**         | Reports reference MITRE ATT&CK technique IDs (e.g., T1059.001) where applicable.                                                                                                                 |
+| **Automatic Severity Detection** | The AI assigns a severity level (Critical, High, Medium, Low) and the system extracts it to categorize the alert.                                                                                |
+| **Cancel Analysis**              | Changed your mind? Cancel an in-progress analysis and the system cleans up gracefully.                                                                                                           |
+| **Auto-Cleanup**                 | Uploaded log files are automatically deleted from the server after analysis completes — only the report is kept.                                                                                 |
+| **Upload History**               | A timestamped history of all analyzed files with quick links to view the resulting alert.                                                                                                        |
+| **Smart Filename Handling**      | Files are timestamped on upload to avoid collisions. Source type is auto-detected from the file extension.                                                                                       |
+
+### Integrated Capabilities
+
+| Feature                        | Description                                                                                                                                                                                             |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Chat About Any Alert**       | From the Alerts page, click "Investigate with AI" to open a new chat session with the full alert context pre-loaded. Ask follow-up questions, request mitigation steps, or challenge the AI's findings. |
+| **Alert Lifecycle Management** | Move alerts through a full workflow: **Active** → **Resolved** (archived) or **False Positive** (with analyst reasoning). Restore any archived alert back to Active if needed.                          |
+| **PDF Report Export**          | Export any alert or archived report as a professionally formatted PDF document with severity color-coding and Markdown-rendered content.                                                                |
+| **Severity-Sorted Alerts**     | Active alerts are auto-sorted by severity: Critical → High → Medium → Low, so the most urgent threats are always at the top.                                                                            |
+| **Advanced Filtering**         | Filter alerts and reports by severity level and file type for quick triage.                                                                                                                             |
+| **False Positive Workflow**    | Mark alerts as false positives with an optional reason. False positives are archived separately in the Reports page for audit trail purposes.                                                           |
+| **Real-Time Dashboard**        | The dashboard shows live counts of total ingested logs, active alerts, AI engine status, and the three most recent alerts with severity badges and direct links.                                        |
+| **Deleted Alert Detection**    | If a log's corresponding alert was deleted, clicking "View Alert" in the logs page shows a graceful animated notification instead of an error.                                                          |
+| **Security-First Design**      | Secure filename handling, file extension whitelisting, input sanitization (DOMPurify), prompt injection protection, parameterized DB queries, and automatic temp file cleanup.                          |
+
+---
+
+## Tech Stack
+
+```
+Backend:    Flask 3.0 · Flask-SQLAlchemy · SQLite · Python 3.10+
+AI:         Ollama · Llama 3 (8B) · Streaming API
+Parsing:    Scapy (PCAP) · csv/json (structured logs)
+Frontend:   Tailwind CSS · Marked.js · DOMPurify · Font Awesome 6
+PDF:        fpdf2 with HTML-to-PDF rendering
+Security:   Werkzeug · DOMPurify · Prompt injection guards
+```
+
+---
+
+## Installation
+
+### Prerequisites
+
+- **Python 3.10+**
+- **Ollama** (local LLM runtime)
+- **Npcap** (Windows only — required by Scapy for PCAP parsing)
+
+### Windows (Automated Install)
+
+A one-click batch script is provided that handles everything:
+
+```
+windows_install.bat
+```
+
+**What it does:**
+
+1. Checks for and installs Python (if not found)
+2. Checks for and installs Ollama (if not found)
+3. Checks for and installs Npcap (if not found — required for PCAP analysis on Windows)
+4. Creates a Python virtual environment and installs all dependencies from `requirements.txt`
+5. Pulls the Llama 3 model via Ollama (if not already installed)
+6. Prompts you to launch the application
+
+**To run:**
+
+```batch
+:: Right-click and "Run as Administrator", or from a terminal:
+windows_install.bat
+```
+
+> **Note:** Administrator privileges are required to install system-level tools (Python, Ollama, Npcap). If these are already installed, the script skips them.
+
+### Linux (Automated Install)
+
+A shell script is provided for Debian/Ubuntu-based distributions:
+
+```
+linux_install.sh
+```
+
+**What it does:**
+
+1. Checks for and installs Python 3 + pip + venv (if not found)
+2. Checks for and installs Ollama (if not found)
+3. Installs `libpcap-dev` (required for Scapy PCAP support)
+4. Creates a Python virtual environment and installs dependencies
+5. Pulls the Llama 3 model via Ollama
+6. Prompts you to launch the application
+
+**To run:**
+
+```bash
+chmod +x linux_install.sh
+./linux_install.sh
+```
+
+### Manual Installation
+
+If you prefer to install everything yourself:
+
+```bash
+# 1. Install Python 3.10+ and Ollama from their official websites
+#    Windows users: also install Npcap from https://npcap.com
+
+# 2. Pull the Llama 3 model
+ollama pull llama3
+
+# 3. Install Python dependencies
+pip install -r requirements.txt
+
+# 4. Run the application
+python app.py
+```
+
+The app will be available at **http://localhost:5000**.
+
+---
+
+## Usage Guide
+
+### Dashboard
+
+The dashboard is your SOC overview at a glance:
+
+- **Total Logs Ingested** — Count of all log files that have been analyzed.
+- **Active Alerts** — Number of unresolved alerts awaiting triage.
+- **AI Engine Core** — Shows the active LLM model (Llama 3) and system status.
+- **Recent Alerts** — The three most recent alerts with severity badges. Click any alert to jump to its details.
+- **Quick Actions** — "Upload Logs" and "Ask AI Assistant" buttons for fast navigation.
+
+### Uploading & Analyzing Logs
+
+1. Navigate to **Log Management** from the sidebar.
+2. Click the upload area or drag and drop a security log file.
+   - Supported formats: `.csv`, `.json`, `.pcap`, `.pcapng`, `.log`, `.txt`
+3. Click **Analyze with IntelliBlue**.
+4. The AI will parse and analyze the file — this may take a moment depending on file size and hardware.
+   - You can **cancel** the analysis at any time using the cancel button.
+5. Once complete, an animated success message appears with a link to the generated alert.
+6. The physical log file is automatically deleted after analysis — only the AI report is retained.
+
+### Managing Alerts
+
+Navigate to **Active Alerts** to see all unresolved threats, sorted by severity:
+
+- **Filter** alerts by severity (Critical, High, Medium, Low) or file type.
+- **Resolve** — Archives the alert under "Resolved" in the Reports page.
+- **False Positive** — Archives the alert as a false positive with an optional analyst reason.
+- **Investigate with AI** — Opens a new chat session with the full alert context pre-attached, so you can ask follow-up questions.
+- **Export PDF** — Downloads a formatted PDF of the incident report.
+
+### Chatting with the AI Assistant
+
+1. Click **+ New Chat** in the sidebar, or click "Ask AI Assistant" on the dashboard.
+2. Type your question or paste indicators of compromise for analysis.
+3. The AI streams its response in real time with Markdown formatting.
+4. Use the **STOP** button to interrupt a response, or the **Regenerate** button to get a fresh answer.
+5. Previous messages are retained in the session — ask follow-up questions naturally.
+6. To investigate a specific alert, use the "Investigate with AI" button on the Alerts page, or attach an alert from within the chat.
+
+### Reports & Exports
+
+Navigate to **Archived Reports** to manage completed investigations:
+
+- **Resolved Reports** — Alerts marked as resolved, with full report content.
+- **False Positives** — Alerts flagged as false positives, with the analyst's reasoning.
+- **Restore** — Move any archived report back to Active Alerts if you need to re-investigate.
+- **Export PDF** — Download a formatted PDF of any report.
+- **Delete** — Permanently remove a report from the database.
+
+### Test Files
+
+IntelliBlue ships with sample security log files in the `assets/test_files/` directory for you to try out the analysis feature:
+
+| File                   | Type | Description                                                    |
+| ---------------------- | ---- | -------------------------------------------------------------- |
+| `firewall_traffic.csv` | CSV  | Firewall traffic log data with network connections             |
+| `edr_ransomware.json`  | JSON | EDR telemetry data containing ransomware-related events        |
+| `c2_beacon.pcap`       | PCAP | Network packet capture with command-and-control beacon traffic |
+| `auth_secure.txt`      | TXT  | Authentication and access control log entries                  |
+| `web_access.log`       | LOG  | Web server access logs with HTTP requests                      |
+
+Upload any of these files from the **Log Management** page to see IntelliBlue generate a full incident analysis report.
+
+---
+
+## Project Structure
+
+```
+IntelliBlue/
+├── app.py                  # Main Flask application (routes, API, LLM integration)
+├── models.py               # SQLAlchemy database models
+├── requirements.txt        # Python dependencies
+├── windows_install.bat     # Automated Windows installer
+├── linux_install.sh        # Automated Linux installer
+├── README.md               # This file
+│
+├── assets/                 # Static assets
+│   ├── intelliblue_logo.png
+│   ├── favicon/
+│   │   ├── favicon.ico
+│   │   ├── favicon-16x16.png
+│   │   └── favicon-32x32.png
+│   └── test_files/         # Sample security logs for testing
+│       ├── auth_secure.txt
+│       ├── c2_beacon.pcap
+│       ├── edr_ransomware.json
+│       ├── firewall_traffic.csv
+│       └── web_access.log
+│
+├── templates/              # Jinja2 HTML templates
+│   ├── base.html           # Shared layout (sidebar, navigation, meta)
+│   ├── dashboard.html      # SOC dashboard overview
+│   ├── logs.html           # Log upload and management
+│   ├── alerts.html         # Active alert triage
+│   ├── reports.html        # Archived reports and false positives
+│   └── chat.html           # AI chatbot interface
+│
+├── instance/               # SQLite database (auto-generated)
+│   └── intelliblue.db
+│
+└── uploads/                # Temporary file storage (auto-cleaned)
+```
+
+---
+
+## Security Considerations
+
+IntelliBlue implements multiple layers of security:
+
+- **File Upload Safety** — Extension whitelisting, secure filename sanitization via Werkzeug, and automatic deletion of uploaded files post-analysis.
+- **Prompt Injection Protection** — User-supplied data is wrapped in designated tags and the system prompt explicitly instructs the AI to treat it as passive data, not executable instructions.
+- **IOC Defanging** — All IP addresses and URLs in AI outputs are defanged to prevent accidental navigation to malicious infrastructure.
+- **Output Sanitization** — All AI-generated Markdown is rendered via Marked.js and sanitized through DOMPurify before being injected into the DOM.
+- **Database Security** — All queries use SQLAlchemy's ORM with parameterized statements, preventing SQL injection. Alert IDs use random UUIDs.
+- **No Cloud Dependencies** — The AI model runs entirely on your local machine via Ollama. No data is transmitted externally.
+
+---
+
+<p align="center">
+  <b>IntelliBlue</b> — Your Local AI-Powered SOC Analyst<br>
+  <sub>Built with Flask · Powered by Llama 3 · Secured by Design</sub>
+</p>
