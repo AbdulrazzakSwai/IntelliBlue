@@ -267,7 +267,6 @@
             uploadAbortController = null;
             currentTaskId = null;
             if (!localStorage.getItem('activeAnalysisId')) {
-                // Task finished naturally or failed, clean up UI if not actively monitoring
             }
         }
     }
@@ -291,7 +290,6 @@
             }
         }
         
-        // Clean up UI and storage
         localStorage.removeItem('activeAnalysisId');
         localStorage.removeItem('activeAnalysisFilename');
         const statusDiv = document.getElementById('uploadStatus');
@@ -315,7 +313,6 @@
                 const data = await response.json();
                 
                 if (data.status === 'running') {
-                    // Restore UI state
                     const statusDiv = document.getElementById('uploadStatus');
                     const analyzeBtn = document.getElementById('analyzeBtn');
                     const cancelBtn = document.getElementById('cancelBtn');
@@ -326,7 +323,6 @@
                     
                     currentTaskId = storedTaskId;
                     
-                    // Poll for completion silently to cleanup if needed
                     const pollInterval = setInterval(async () => {
                         try {
                              if (!currentTaskId) {
@@ -337,8 +333,6 @@
                              const checkData = await check.json();
                              
                              if (checkData.status !== 'running') {
-                                 // Task finished (we don't know success/fail easily without more backend change,
-                                 // but we should reset UI so user isn't stuck)
                                  clearInterval(pollInterval);
                                  localStorage.removeItem('activeAnalysisId');
                                  localStorage.removeItem('activeAnalysisFilename');
@@ -348,9 +342,19 @@
                                  analyzeBtn.classList.remove('hidden');
                                  cancelBtn.classList.add('hidden');
                                  
-                                   if (checkData.status === 'not_found' || checkData.status === 'completed') {
-                                       alert('Analysis concluded. Please check the Alerts dashboard for results.');
-                                     window.location.reload(); 
+                                 if (checkData.status === 'not_found' || checkData.status === 'completed') {
+                                     document.getElementById('modalFilename').textContent = storedFilename || "your file";
+                                     document.getElementById('viewAlertBtn').href = "{{ url_for('alerts') }}#alert-" + (storedFilename || "");
+                
+                                     const modal = document.getElementById('successModal');
+                                     const modalContent = document.getElementById('successModalContent');
+                
+                                     modal.classList.remove('hidden');
+                                     setTimeout(() => {
+                                         modal.classList.remove('opacity-0');
+                                         modalContent.classList.remove('scale-95');
+                                         modalContent.classList.add('scale-100');
+                                     }, 10);
                                  }
                              }
                         } catch (e) {
@@ -358,7 +362,6 @@
                         }
                     }, 2000);
                 } else {
-                    // Task finished while away
                     localStorage.removeItem('activeAnalysisId');
                     localStorage.removeItem('activeAnalysisFilename');
                 }
