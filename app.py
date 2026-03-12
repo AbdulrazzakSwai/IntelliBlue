@@ -36,7 +36,11 @@ def inject_global_data():
     )
 
 with app.app_context():
-    db.create_all()
+    # Attempt to add the new UUID table cleanly
+    try:
+        db.create_all()
+    except Exception:
+        pass
 
 @app.route('/')
 def dashboard():
@@ -85,21 +89,21 @@ def reports():
     archived_reports = Alert.query.filter_by(status="Resolved").order_by(Alert.date_created.desc()).all()
     return render_template('reports.html', reports=archived_reports)
 
-@app.route('/alert/<int:alert_id>/resolve', methods=['POST'])
+@app.route('/alert/<string:alert_id>/resolve', methods=['POST'])
 def resolve_alert(alert_id):
     alert_to_resolve = db.get_or_404(Alert, alert_id)
     alert_to_resolve.status = "Resolved"
     db.session.commit()
     return redirect(url_for('alerts'))
 
-@app.route('/report/<int:report_id>/restore', methods=['POST'])
+@app.route('/report/<string:report_id>/restore', methods=['POST'])
 def restore_alert(report_id):
     alert_to_restore = db.get_or_404(Alert, report_id)
     alert_to_restore.status = "Active"
     db.session.commit()
     return redirect(url_for('reports'))
 
-@app.route('/report/<int:report_id>/export', methods=['GET'])
+@app.route('/report/<string:report_id>/export', methods=['GET'])
 def export_report_pdf(report_id):
     alert = db.get_or_404(Alert, report_id)
 
@@ -182,7 +186,7 @@ def delete_chat(session_id):
     db.session.commit()
     return redirect(url_for('chat_redirect'))
 
-@app.route('/report/<int:report_id>/delete', methods=['POST'])
+@app.route('/report/<string:report_id>/delete', methods=['POST'])
 def delete_report(report_id):
     report_to_delete = db.get_or_404(Alert, report_id)
     db.session.delete(report_to_delete)

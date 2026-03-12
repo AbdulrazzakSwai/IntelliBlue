@@ -1,0 +1,16 @@
+{
+  "event_time": "2026-03-12T11:45:22Z",
+  "sensor_id": "WIN-DESKTOP-992",
+  "event_type": "Process Creation",
+  "severity": "Critical",
+  "user_account": "NT AUTHORITY\\SYSTEM",
+  "process": {
+    "image_path": "C:\\Windows\\System32\\vssadmin.exe",
+    "command_line": "vssadmin.exe delete shadows /all /quiet",
+    "parent_image_path": "C:\\Windows\\System32\\cmd.exe",
+    "hash_sha256": "42F4B3C68397B1414DA042079EFD7B1C6339FC4E2CD884488A836FA1E247294D"
+  },
+  "mitre_attck": [
+    "T1490: Inhibit System Recovery"
+  ]
+}

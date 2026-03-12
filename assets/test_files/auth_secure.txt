@@ -1,0 +1,6 @@
+Mar 12 09:30:01 srv-db-01 sshd[2210]: Accepted publickey for jsmith from 10.0.5.15 port 51234 ssh2
+Mar 12 09:30:01 srv-db-01 sshd[2210]: pam_unix(sshd:session): session opened for user jsmith by (uid=0)
+Mar 12 09:32:15 srv-db-01 su[2245]: pam_unix(su:auth): authentication failure; logname=jsmith uid=1001 euid=0 tty=pts/1 ruser=jsmith rhost=  user=root
+Mar 12 09:32:20 srv-db-01 su[2246]: pam_unix(su:auth): authentication failure; logname=jsmith uid=1001 euid=0 tty=pts/1 ruser=jsmith rhost=  user=root
+Mar 12 09:33:05 srv-db-01 su[2250]: pam_unix(su:session): session opened for user root by jsmith(uid=1001)
+Mar 12 09:33:10 srv-db-01 useradd[2255]: new user: name=sysadmin_temp, UID=1005, GID=1005, home=/home/sysadmin_temp, shell=/bin/bash

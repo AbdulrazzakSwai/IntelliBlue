@@ -1,6 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
+import uuid
+
 db = SQLAlchemy()
 
 class LogFile(db.Model):
@@ -10,7 +12,7 @@ class LogFile(db.Model):
     upload_date = db.Column(db.DateTime, default=datetime.utcnow)
 
 class Alert(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     title = db.Column(db.String(150), nullable=False)
     description = db.Column(db.Text, nullable=False)
     severity = db.Column(db.String(50), default="Medium")

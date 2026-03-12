@@ -42,9 +42,6 @@
     <div class="p-5 bg-gray-850 border-t border-gray-700">
         <form id="chatForm" class="flex space-x-4" onsubmit="sendMessage(event)">
             <div class="flex-1 flex bg-gray-900 border border-gray-600 rounded-lg overflow-hidden focus-within:border-cyber-blue focus-within:shadow-[0_0_10px_rgba(14,165,233,0.3)] transition-all duration-300">
-                <div class="bg-gray-800 border-r border-gray-700 flex items-center px-3 group">
-                    <i class="fa-solid fa-paperclip text-gray-400 group-hover:text-cyber-neon transition-colors"></i>
-                </div>
                 <select id="alertContext" class="bg-gray-800 text-gray-300 border-r border-gray-700 px-3 py-4 focus:outline-none max-w-[220px] truncate text-sm hover:bg-gray-700 cursor-pointer font-display tracking-wide font-medium appearance-none">
                     <option value="">No context attached</option>
                     {% for alert in global_alerts %}
