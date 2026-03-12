@@ -17,6 +17,7 @@ class Alert(db.Model):
     description = db.Column(db.Text, nullable=False)
     severity = db.Column(db.String(50), default="Medium")
     status = db.Column(db.String(50), default="Active")
+    fp_reason = db.Column(db.Text, nullable=True)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
 
 class ChatSession(db.Model):

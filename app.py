@@ -90,7 +90,8 @@ def alerts():
 @app.route('/reports')
 def reports():
     archived_reports = Alert.query.filter_by(status="Resolved").order_by(Alert.date_created.desc()).all()
-    return render_template('reports.html', reports=archived_reports)
+    fp_reports = Alert.query.filter_by(status="False Positive").order_by(Alert.date_created.desc()).all()
+    return render_template('reports.html', reports=archived_reports, fp_reports=fp_reports)
 
 @app.route('/api/task_status/<task_id>')
 def check_task_status(task_id):
@@ -103,6 +104,15 @@ def check_task_status(task_id):
 def resolve_alert(alert_id):
     alert_to_resolve = db.get_or_404(Alert, alert_id)
     alert_to_resolve.status = "Resolved"
+    db.session.commit()
+    return redirect(url_for('alerts'))
+
+@app.route('/alert/<string:alert_id>/false_positive', methods=['POST'])
+def false_positive_alert(alert_id):
+    alert_to_fp = db.get_or_404(Alert, alert_id)
+    reason = request.form.get('fp_reason', '').strip()
+    alert_to_fp.status = "False Positive"
+    alert_to_fp.fp_reason = reason if reason else None
     db.session.commit()
     return redirect(url_for('alerts'))
 

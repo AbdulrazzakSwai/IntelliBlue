@@ -125,6 +125,86 @@
     </div>
 </div>
 
+<div class="mt-10 mb-6 flex justify-between items-center">
+    <h3 class="text-2xl font-bold text-white font-display tracking-wide flex items-center">
+        <i class="fa-solid fa-flag text-yellow-500 mr-3 drop-shadow-[0_0_8px_rgba(234,179,8,0.8)]"></i> False Positives
+    </h3>
+</div>
+
+<div class="bg-gray-850 rounded-xl border border-yellow-900/50 shadow-[0_8px_30px_rgba(0,0,0,0.5)] overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left text-gray-400">
+            <thead class="text-xs text-gray-300 uppercase font-display tracking-widest bg-gray-900 border-b border-gray-700">
+                <tr>
+                    <th class="px-6 py-4">Alert Title</th>
+                    <th class="px-6 py-4">Severity</th>
+                    <th class="px-6 py-4">Analyst Reason</th>
+                    <th class="px-6 py-4">Date</th>
+                    <th class="px-6 py-4 text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for fp in fp_reports %}
+                <tr class="fp-item border-b border-gray-800 hover:bg-gray-800 transition-colors" data-severity="{{ fp.severity }}" data-title="{{ fp.title.lower() }}">
+                    <td class="px-6 py-4 font-medium text-white flex items-center">
+                        <i class="fa-solid fa-flag text-yellow-500 mr-3 opacity-80"></i> {{ fp.title }}
+                    </td>
+                    <td class="px-6 py-4">
+                        {% if fp.severity == 'Critical' %}
+                        <span class="px-3 py-1.5 bg-purple-900/50 text-purple-400 text-xs font-bold uppercase rounded-md border border-purple-700 tracking-widest inline-flex items-center">
+                            <i class="fa-solid fa-skull-crossbones mr-1.5"></i> {{ fp.severity }}
+                        </span>
+                        {% elif fp.severity == 'High' %}
+                        <span class="px-3 py-1.5 bg-red-900/50 text-red-400 text-xs font-bold uppercase rounded-md border border-red-700 tracking-widest inline-flex items-center">
+                            <i class="fa-solid fa-fire mr-1.5"></i> {{ fp.severity }}
+                        </span>
+                        {% elif fp.severity == 'Medium' %}
+                        <span class="px-3 py-1.5 bg-orange-900/50 text-orange-400 text-xs font-bold uppercase rounded-md border border-orange-700 tracking-widest inline-flex items-center">
+                            <i class="fa-solid fa-bolt mr-1.5"></i> {{ fp.severity }}
+                        </span>
+                        {% else %}
+                        <span class="px-3 py-1.5 bg-green-900/50 text-green-400 text-xs font-bold uppercase rounded-md border border-green-700 tracking-widest inline-flex items-center">
+                            <i class="fa-solid fa-shield-virus mr-1.5"></i> {{ fp.severity }}
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 text-gray-400 text-xs max-w-xs truncate" title="{{ fp.fp_reason or 'No reason provided' }}">
+                        {% if fp.fp_reason %}
+                        <i class="fa-solid fa-quote-left text-yellow-600 mr-1.5 text-[10px]"></i>{{ fp.fp_reason }}
+                        {% else %}
+                        <span class="text-gray-600 italic">No reason provided</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 font-mono text-xs">{{ fp.date_created.strftime('%Y-%m-%d %H:%M UTC') }}</td>
+                    <td class="px-6 py-4 text-right space-x-4">
+                        <form action="{{ url_for('restore_alert', report_id=fp.id) }}" method="POST" class="inline">
+                            <button type="submit" class="text-cyber-blue hover:text-cyber-neon font-bold font-display uppercase text-xs tracking-wider transition-all inline-flex items-center hover:scale-105">
+                                <i class="fa-solid fa-arrow-rotate-left mr-1.5"></i> Reopen
+                            </button>
+                        </form>
+                        <a href="{{ url_for('export_report_pdf', report_id=fp.id) }}" class="text-green-400 hover:text-green-300 font-bold font-display uppercase text-xs tracking-wider transition-all inline-flex items-center hover:scale-105">
+                            <i class="fa-solid fa-file-pdf mr-1.5"></i> PDF
+                        </a>
+                        <form action="{{ url_for('delete_report', report_id=fp.id) }}" method="POST" class="inline" onsubmit="showDeleteModal(event, this, 'Are you sure you want to permanently delete this false positive report?');">
+                            <button type="submit" class="text-red-500 hover:text-red-400 font-bold font-display uppercase text-xs tracking-wider transition-all inline-flex items-center hover:scale-105">
+                                <i class="fa-solid fa-trash-can mr-1.5"></i> Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+                        <i class="fa-solid fa-flag text-3xl mb-2 block text-gray-700"></i>
+                        No alerts have been classified as false positives.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
 <script>    function filterItems() {
         const sevFilter = document.getElementById('severityFilter').value;
         const fileFilter = document.getElementById('filetypeFilter').value;
