@@ -132,7 +132,7 @@ Security:   Werkzeug · DOMPurify · Prompt injection guards
 
 ### Windows (Automated Install)
 
-Open PowerShell as Administrator and run the following command to download and execute the installation script in one step:
+Open PowerShell **as Administrator** and run the following command to download and execute the installation script in one step:
 
 ```powershell
 iwr https://raw.githubusercontent.com/AbdulrazzakSwai/IntelliBlue/main/windows_install.ps1 -UseBasicParsing | iex
