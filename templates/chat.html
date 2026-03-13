@@ -205,7 +205,7 @@ let currentRequestId = null;
             let displayMessage = message;
             if (selectedAlertId) {
                 const selectedText = alertContextSelect.options[alertContextSelect.selectedIndex].text.replace('Attach: ', '');
-                displayMessage = message + `\n\n*(Attached Reference: ${selectedText})*`;
+                displayMessage = message + `\n\n(Attached Reference: ${selectedText})`;
                 alertContextSelect.value = "";
             }
             
