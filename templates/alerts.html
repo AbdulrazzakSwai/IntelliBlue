@@ -24,7 +24,7 @@
         <div class="relative">
             <select id="filetypeFilter" onchange="filterItems()" class="bg-gray-800 border border-gray-600 text-gray-300 text-sm rounded-lg px-4 py-2.5 outline-none focus:border-cyber-blue transition-colors appearance-none pr-10 font-display">
                 <option value="all">All File Types</option>
-                <option value="pcap">PCAP</option>
+                <option value="pcap">PCAP/PCAPNG</option>
                 <option value="csv">CSV</option>
                 <option value="json">JSON</option>
                 <option value="txt">TXT</option>
@@ -138,7 +138,8 @@
     </div>
 </div>
 
-<script>    function filterItems() {
+<script>    
+    function filterItems() {
         const sevFilter = document.getElementById('severityFilter').value;
         const fileFilter = document.getElementById('filetypeFilter').value;
         const items = document.querySelectorAll('.alert-item');
