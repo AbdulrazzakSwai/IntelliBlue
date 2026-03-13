@@ -70,6 +70,10 @@ Write-Host ""
 # -------------------------------------------
 Write-Host "[*] [2/6] Installing missing tools..." -ForegroundColor Yellow
 
+if ($gitInstalled -and $pythonInstalled -and $ollamaInstalled -and $npcapInstalled) {
+    Write-Host "      [+] All tools are installed, no need to install anything." -ForegroundColor Green
+}
+
 if (-not $gitInstalled) {
     Write-Host "      [*] Installing Git..." -ForegroundColor Cyan
     Invoke-WebRequest -Uri "https://github.com/git-for-windows/git/releases/download/v2.44.0.windows.1/Git-2.44.0-64-bit.exe" -OutFile "$env:TEMP\git_installer.exe"
@@ -150,16 +154,13 @@ if ($ollamaList -match "llama3") {
     }
 }
 
-Write-Host "      [*] Initializing Llama 3 model..." -ForegroundColor Cyan
-ollama run llama3 "system initialization" | Out-Null
-
 Write-Host ""
 
 # -------------------------------------------
 # Clone Repository
 # -------------------------------------------
 Write-Host "[*] [4/6] Cloning IntelliBlue repository..." -ForegroundColor Yellow
-$installDir = "$HOME\IntelliBlue"
+$installDir = "$HOME\Desktop\IntelliBlue"
 if (Test-Path $installDir) {
     Write-Host "      [*] Directory already exists at $installDir" -ForegroundColor Cyan
     if ($ForceInstall) {
@@ -192,8 +193,8 @@ Write-Host ""
 # Install Dependencies
 # -------------------------------------------
 Write-Host "[*] [6/6] Installing Python dependencies..." -ForegroundColor Yellow
-& ".\venv\Scripts\python.exe" -m pip install --upgrade pip --quiet *>$null
-& ".\venv\Scripts\python.exe" -m pip install -r requirements.txt --quiet *>$null
+& ".\venv\Scripts\python.exe" -m pip install --upgrade pip
+& ".\venv\Scripts\python.exe" -m pip install -r requirements.txt
 if ($LASTEXITCODE -ne 0) {
     Write-Host "      [-] Failed to install Python dependencies." -ForegroundColor Red
     exit 1

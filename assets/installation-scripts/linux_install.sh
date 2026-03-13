@@ -62,6 +62,10 @@ echo ""
 # -------------------------------------------
 echo -e "${YELLOW}  [*] [2/6] Installing missing tools...${NC}"
 
+if [ -z "$GIT_MISSING" ] && [ -z "$PY_MISSING" ] && [ -z "$OLLAMA_MISSING" ] && [ -z "$PCAP_MISSING" ]; then
+    echo -e "${GREEN}      [+] All tools are installed, no need to install anything.${NC}"
+fi
+
 if [ "$GIT_MISSING" = "1" ] || [ "$PY_MISSING" = "1" ] || [ "$PCAP_MISSING" = "1" ]; then
     echo -e "${CYAN}      [*] Updating package manager and installing missing tools...${NC}"
     if command -v apt-get &>/dev/null; then
@@ -123,16 +127,13 @@ else
     fi
 fi
 
-echo -e "${CYAN}      [*] Initializing Llama 3 model...${NC}"
-ollama run llama3 "system initialization" > /dev/null 2>&1 || true
-
 echo ""
 
 # -------------------------------------------
 # Clone Repository
 # -------------------------------------------
 echo -e "${YELLOW}  [*] [4/6] Cloning IntelliBlue repository...${NC}"
-INSTALL_DIR="$HOME/IntelliBlue"
+INSTALL_DIR="$HOME/Desktop/IntelliBlue"
 if [ -d "$INSTALL_DIR" ]; then
     echo -e "${CYAN}      [*] Directory already exists at $INSTALL_DIR${NC}"
     echo -e "${CYAN}      [*] Skipping clone. (Remove directory to re-clone)${NC}"
@@ -160,8 +161,8 @@ echo ""
 # Install Dependencies
 # -------------------------------------------
 echo -e "${YELLOW}  [*] [6/6] Installing Python dependencies...${NC}"
-pip install --upgrade pip --quiet >/dev/null 2>&1
-pip install -r requirements.txt --quiet >/dev/null 2>&1
+pip install --upgrade pip
+pip install -r requirements.txt
 if [ $? -ne 0 ]; then
     echo -e "${RED}  [-] Failed to install Python dependencies.${NC}"
     exit 1
