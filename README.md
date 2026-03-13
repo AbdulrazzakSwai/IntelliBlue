@@ -135,7 +135,7 @@ Security:   Werkzeug · DOMPurify · Prompt injection guards
 Open PowerShell **as Administrator** and run the following command to download and execute the installation script in one step:
 
 ```powershell
-iwr https://raw.githubusercontent.com/AbdulrazzakSwai/IntelliBlue/main/windows_install.ps1 -UseBasicParsing | iex
+iwr https://raw.githubusercontent.com/AbdulrazzakSwai/IntelliBlue/main/assets/installation-scripts/windows_install.ps1 -UseBasicParsing | iex
 ```
 
 This script will automatically:
@@ -152,7 +152,7 @@ This script will automatically:
 Run the following command in your terminal. You may be prompted for your `sudo` password to install system packages.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/AbdulrazzakSwai/IntelliBlue/main/linux_install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/AbdulrazzakSwai/IntelliBlue/main/assets/installation-scripts/linux_install.sh | bash
 ```
 
 This script will automatically:
@@ -254,7 +254,7 @@ Navigate to **Archived Reports** to manage completed investigations:
 
 ### Test Files
 
-IntelliBlue ships with sample security log files in the `assets/test_files/` directory for you to try out the analysis feature:
+IntelliBlue ships with sample security log files in the `assets/test-files/` directory for you to try out the analysis feature:
 
 | File                   | Type | Description                                                    |
 | ---------------------- | ---- | -------------------------------------------------------------- |
