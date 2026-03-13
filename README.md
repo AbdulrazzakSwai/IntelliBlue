@@ -130,12 +130,6 @@ Security:   Werkzeug · DOMPurify · Prompt injection guards
 
 ## Installation
 
-### Prerequisites
-
-- **Python 3.10+**
-- **Ollama** (local LLM runtime)
-- **Npcap** (Windows only — required by Scapy for PCAP parsing)
-
 ### Windows (Automated Install)
 
 Open PowerShell as Administrator and run the following command to download and execute the installation script in one step:
