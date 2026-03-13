@@ -181,6 +181,13 @@ let currentRequestId = null;
     async function sendMessage(event, regenerate = false) {
         if (event) event.preventDefault();
         
+        const inputField = document.getElementById('userInput');
+        let message = inputField.value.trim();
+        
+        if (!regenerate && !message) {
+            return;
+        }
+        
         let requestId = Date.now();
         currentRequestId = requestId;
 
@@ -190,16 +197,13 @@ let currentRequestId = null;
 
         hideRegenerateButton();
         
-        const inputField = document.getElementById('userInput');
         const alertContextSelect = document.getElementById('alertContext');
         const sendBtn = document.getElementById('sendBtn');
         const stopBtn = document.getElementById('stopBtn');
         
-        let message = inputField.value.trim();
         let selectedAlertId = alertContextSelect.value;
 
         if (!regenerate) {
-            if (!message) return;
             inputField.value = '';
             
             let displayMessage = message;
