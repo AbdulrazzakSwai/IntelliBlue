@@ -139,69 +139,67 @@ Security:   Werkzeug · DOMPurify · Prompt injection guards
 
 ### Windows (Automated Install)
 
-A one-click batch script is provided that handles everything:
+Open PowerShell as Administrator and run the following command to download and execute the installation script in one step:
 
-```
-windows_install.bat
-```
-
-**What it does:**
-
-1. Checks for and installs Python (if not found)
-2. Checks for and installs Ollama (if not found)
-3. Checks for and installs Npcap (if not found — required for PCAP analysis on Windows)
-4. Creates a Python virtual environment and installs all dependencies from `requirements.txt`
-5. Pulls the Llama 3 model via Ollama (if not already installed)
-6. Prompts you to launch the application
-
-**To run:**
-
-```batch
-:: Right-click and "Run as Administrator", or from a terminal:
-windows_install.bat
+```powershell
+iwr https://raw.githubusercontent.com/AbdulrazzakSwai/IntelliBlue/main/windows_install.ps1 -UseBasicParsing | iex
 ```
 
-> **Note:** Administrator privileges are required to install system-level tools (Python, Ollama, Npcap). If these are already installed, the script skips them.
+This script will automatically:
+
+1. Verify Administrator privileges
+2. Install Git, Python 3.12, Ollama, and Npcap (if missing)
+3. Download the Llama 3 model via Ollama
+4. Clone the repository to the `%USERPROFILE%\IntelliBlue` folder
+5. Create a virtual environment and install all dependencies
+6. Prompt you to launch the app immediately
 
 ### Linux (Automated Install)
 
-A shell script is provided for Debian/Ubuntu-based distributions:
-
-```
-linux_install.sh
-```
-
-**What it does:**
-
-1. Checks for and installs Python 3 + pip + venv (if not found)
-2. Checks for and installs Ollama (if not found)
-3. Installs `libpcap-dev` (required for Scapy PCAP support)
-4. Creates a Python virtual environment and installs dependencies
-5. Pulls the Llama 3 model via Ollama
-6. Prompts you to launch the application
-
-**To run:**
+Run the following command in your terminal. You may be prompted for your `sudo` password to install system packages.
 
 ```bash
-chmod +x linux_install.sh
-./linux_install.sh
+curl -fsSL https://raw.githubusercontent.com/AbdulrazzakSwai/IntelliBlue/main/linux_install.sh | bash
 ```
+
+This script will automatically:
+
+1. Detect your package manager (apt, dnf, pacman)
+2. Install Git, Python 3 (with pip/venv), Ollama, and `libpcap` (if missing)
+3. Start the Ollama service and download the Llama 3 model
+4. Clone the repository to the `~/IntelliBlue` directory
+5. Create a Python virtual environment and install all dependencies
+6. Prompt you to launch the app immediately
 
 ### Manual Installation
 
 If you prefer to install everything yourself:
 
 ```bash
-# 1. Install Python 3.10+ and Ollama from their official websites
+# 1. Install Git, Python 3.10+, and Ollama from their official websites
 #    Windows users: also install Npcap from https://npcap.com
+#    Linux users: also install libpcap (e.g., sudo apt install libpcap-dev)
 
-# 2. Pull the Llama 3 model
+# 2. Clone the repository and navigate into it
+git clone https://github.com/AbdulrazzakSwai/IntelliBlue.git
+cd IntelliBlue
+
+# 3. Pull the Llama 3 model and run it
 ollama pull llama3
+ollama run llama3 "system initialization"
 
-# 3. Install Python dependencies
+# 4. Create and activate a virtual environment
+# Windows:
+python -m venv venv
+.\venv\Scripts\activate
+# Linux/macOS:
+python3 -m venv venv
+source venv/bin/activate
+
+# 5. Install Python dependencies
 pip install -r requirements.txt
 
-# 4. Run the application
+# 6. Run the application
 python app.py
 ```
 

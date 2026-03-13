@@ -9,39 +9,77 @@ echo "  ============================================================"
 echo ""
 
 # -------------------------------------------
-# 1. Check / Install Python 3
+# Pre-requisite Checks
 # -------------------------------------------
-echo "  [1/5] Checking for Python 3..."
+echo "  [1/6] Checking for required tools..."
+
+# Check Git
+if command -v git &>/dev/null; then
+    GITVER=$(git --version | awk '{print $3}')
+    echo "        Found Git: $GITVER"
+else
+    echo "        Git is NOT installed."
+    GIT_MISSING=1
+fi
+
+# Check Python 3
 if command -v python3 &>/dev/null; then
     PYVER=$(python3 --version 2>&1 | awk '{print $2}')
-    echo "        Found Python $PYVER"
+    echo "        Found Python 3: $PYVER"
 else
-    echo "        Python 3 not found. Installing..."
-    if command -v apt-get &>/dev/null; then
-        sudo apt-get update -qq
-        sudo apt-get install -y python3 python3-pip python3-venv
-    elif command -v dnf &>/dev/null; then
-        sudo dnf install -y python3 python3-pip
-    elif command -v pacman &>/dev/null; then
-        sudo pacman -Sy --noconfirm python python-pip
-    else
-        echo "  [X] Could not detect package manager."
-        echo "      Please install Python 3.10+ manually and re-run this script."
-        exit 1
-    fi
-    echo "        Python 3 installed successfully."
+    echo "        Python 3 is NOT installed."
+    PY_MISSING=1
+fi
+
+# Check Ollama
+if command -v ollama &>/dev/null; then
+    OLLAMAVER=$(ollama --version)
+    echo "        Found Ollama: $OLLAMAVER"
+else
+    echo "        Ollama is NOT installed."
+    OLLAMA_MISSING=1
+fi
+
+# Check libpcap
+if dpkg -s libpcap-dev &>/dev/null 2>&1 || rpm -q libpcap-devel &>/dev/null 2>&1 || pacman -Qs libpcap &>/dev/null 2>&1; then
+    echo "        Found libpcap."
+else
+    echo "        libpcap is NOT installed."
+    PCAP_MISSING=1
 fi
 
 echo ""
 
 # -------------------------------------------
-# 2. Check / Install Ollama
+# Install Missing Tools
 # -------------------------------------------
-echo "  [2/5] Checking for Ollama..."
-if command -v ollama &>/dev/null; then
-    echo "        Found Ollama."
-else
-    echo "        Ollama not found. Installing via official script..."
+echo "  [2/6] Installing missing tools..."
+
+if [ "$GIT_MISSING" = "1" ] || [ "$PY_MISSING" = "1" ] || [ "$PCAP_MISSING" = "1" ]; then
+    echo "        Updating package manager and installing missing tools..."
+    if command -v apt-get &>/dev/null; then
+        sudo apt-get update -qq
+        [ "$GIT_MISSING" = "1" ] && sudo apt-get install -y git
+        [ "$PY_MISSING" = "1" ] && sudo apt-get install -y python3 python3-pip python3-venv
+        [ "$PCAP_MISSING" = "1" ] && sudo apt-get install -y libpcap-dev
+    elif command -v dnf &>/dev/null; then
+        [ "$GIT_MISSING" = "1" ] && sudo dnf install -y git
+        [ "$PY_MISSING" = "1" ] && sudo dnf install -y python3 python3-pip
+        [ "$PCAP_MISSING" = "1" ] && sudo dnf install -y libpcap-devel
+    elif command -v pacman &>/dev/null; then
+        [ "$GIT_MISSING" = "1" ] && sudo pacman -Sy --noconfirm git
+        [ "$PY_MISSING" = "1" ] && sudo pacman -Sy --noconfirm python python-pip
+        [ "$PCAP_MISSING" = "1" ] && sudo pacman -Sy --noconfirm libpcap
+    else
+        echo "  [X] Could not detect package manager to install tools."
+        echo "      Please install Git, Python 3, and libpcap manually."
+        exit 1
+    fi
+    echo "        Tools installed successfully."
+fi
+
+if [ "$OLLAMA_MISSING" = "1" ]; then
+    echo "        Installing Ollama..."
     curl -fsSL https://ollama.com/install.sh | sh
     if [ $? -ne 0 ]; then
         echo "  [X] Ollama installation failed."
@@ -54,55 +92,9 @@ fi
 echo ""
 
 # -------------------------------------------
-# 3. Install libpcap (required for Scapy)
+# Llama 3 Setup
 # -------------------------------------------
-echo "  [3/5] Checking for libpcap (required for PCAP analysis)..."
-if dpkg -s libpcap-dev &>/dev/null 2>&1; then
-    echo "        Found libpcap-dev."
-elif rpm -q libpcap-devel &>/dev/null 2>&1; then
-    echo "        Found libpcap-devel."
-else
-    echo "        Installing libpcap..."
-    if command -v apt-get &>/dev/null; then
-        sudo apt-get install -y libpcap-dev
-    elif command -v dnf &>/dev/null; then
-        sudo dnf install -y libpcap-devel
-    elif command -v pacman &>/dev/null; then
-        sudo pacman -Sy --noconfirm libpcap
-    else
-        echo "  [!] Could not install libpcap automatically."
-        echo "      PCAP analysis may not work. Install libpcap manually if needed."
-    fi
-fi
-
-echo ""
-
-# -------------------------------------------
-# 4. Set up virtual environment & install deps
-# -------------------------------------------
-echo "  [4/5] Setting up Python virtual environment and installing dependencies..."
-
-if [ ! -d "venv" ]; then
-    python3 -m venv venv
-    echo "        Created virtual environment (venv/)."
-fi
-
-source venv/bin/activate
-
-pip install --upgrade pip --quiet
-pip install -r requirements.txt
-if [ $? -ne 0 ]; then
-    echo "  [X] Failed to install Python dependencies."
-    exit 1
-fi
-echo "        Dependencies installed successfully."
-
-echo ""
-
-# -------------------------------------------
-# 5. Pull Llama 3 model (if not already installed)
-# -------------------------------------------
-echo "  [5/5] Checking for Llama 3 model..."
+echo "  [3/6] Setting up Llama 3 model..."
 
 # Start Ollama service if not running
 if ! pgrep -x "ollama" &>/dev/null; then
@@ -114,30 +106,77 @@ fi
 if ollama list 2>/dev/null | grep -qi "llama3"; then
     echo "        Llama 3 model already installed."
 else
-    echo "        Llama 3 not found. Pulling model via Ollama..."
-    echo "        (This is a one-time download of ~4.7 GB. Please be patient.)"
-    echo ""
+    echo "        Pulling Llama 3 model via Ollama (This may take a while)..."
     ollama pull llama3
     if [ $? -ne 0 ]; then
-        echo ""
         echo "  [!] Failed to pull Llama 3 model."
         echo "      Make sure Ollama is running and try:  ollama pull llama3"
     else
-        echo ""
         echo "        Llama 3 model ready."
     fi
 fi
+
+echo "        Initializing Llama 3 model..."
+ollama run llama3 "system initialization" > /dev/null 2>&1 || true
+
+echo ""
+
+# -------------------------------------------
+# Clone Repository
+# -------------------------------------------
+echo "  [4/6] Cloning IntelliBlue repository..."
+INSTALL_DIR="$HOME/IntelliBlue"
+if [ -d "$INSTALL_DIR" ]; then
+    echo "        Directory already exists at $INSTALL_DIR"
+    echo "        Skipping clone. (Remove directory to re-clone)"
+    cd "$INSTALL_DIR"
+else
+    git clone https://github.com/AbdulrazzakSwai/IntelliBlue.git "$INSTALL_DIR"
+    cd "$INSTALL_DIR"
+fi
+
+echo ""
+
+# -------------------------------------------
+# Python VENV
+# -------------------------------------------
+echo "  [5/6] Setting up Python virtual environment..."
+if [ ! -d "venv" ]; then
+    python3 -m venv venv
+    echo "        Created virtual environment (venv/)."
+fi
+
+source venv/bin/activate
+echo ""
+
+# -------------------------------------------
+# Install Dependencies
+# -------------------------------------------
+echo "  [6/6] Installing Python dependencies..."
+pip install --upgrade pip --quiet
+pip install -r requirements.txt
+if [ $? -ne 0 ]; then
+    echo "  [X] Failed to install Python dependencies."
+    exit 1
+fi
+echo "        Dependencies installed successfully."
 
 echo ""
 echo "  ============================================================"
 echo "           Installation Complete!"
 echo "  ============================================================"
 echo ""
-echo "  To start IntelliBlue:"
+echo "  To start IntelliBlue at any time:"
 echo ""
+echo "      cd $INSTALL_DIR"
 echo "      source venv/bin/activate"
 echo "      python3 app.py"
 echo ""
 echo "  The application will be available at http://localhost:5000"
 echo "  ============================================================"
 echo ""
+
+read -p "Would you like to run IntelliBlue now? (y/n) " response
+if [[ "$response" =~ ^[Yy]$ ]]; then
+    python3 app.py
+fi
