@@ -78,7 +78,7 @@
 | **Streaming Responses**          | AI responses are streamed in real time with a smooth typewriter effect — no waiting for the full answer to generate.                                                       |
 | **Response Interruption**        | A STOP button lets you halt the AI mid-response if you already have what you need.                                                                                         |
 | **Regenerate Response**          | Didn't like the answer? A "Resend Last Prompt" button re-sends your last message with higher creativity for a fresh response.                                              |
-| **Conversation Memory**          | The AI retains the last 10 messages in each session for contextual follow-up questions and multi-turn investigations.                                                      |
+| **Conversation Memory**          | The AI remembers the last 10 messages in each session for contextual follow-up questions and multi-turn investigations.                                                      |
 | **Markdown Rendering**           | Responses are rendered with full Markdown support — code blocks, tables, bold, lists — sanitized via DOMPurify for safety.                                                 |
 | **Smart Chat Titles**            | After your first exchange, the AI auto-generates a concise 3–6 word title for the chat (e.g., "Phishing Email Analysis") in the background without blocking your workflow. |
 | **Session Management**           | Create unlimited chat sessions, switch between them from the sidebar, and delete sessions you no longer need.                                                              |
@@ -129,6 +129,8 @@ Security:   Werkzeug · DOMPurify · Prompt injection guards
 ---
 
 ## Installation
+
+> **⚠️ WARNING:** Installing and running IntelliBlue inside a Virtual Machine (VM) is highly discouraged. Running local Large Language Models (like Llama 3) inside a VM without dedicated GPU power will result in severely degraded performance and extremely slow AI response times.
 
 ### Windows (Automated Install)
 
