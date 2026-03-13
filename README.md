@@ -43,7 +43,7 @@
 
 ## About the Project
 
-**IntelliBlue** is a fully local, AI-powered Security Operations Center (SOC) platform designed for cybersecurity analysts, students, and enthusiasts. It combines a modern web dashboard with a locally-hosted Large Language Model (Llama 3 via Ollama) to deliver real-time threat analysis, interactive incident investigation, and structured incident reporting — all without sending a single byte of data to the cloud.
+**IntelliBlue** is a fully local, AI-powered Security Operations Center (SOC) platform designed for cybersecurity analysts, students, and enthusiasts. It combines a modern web dashboard with a locally-hosted Large Language Model (Llama 3 via Ollama) to deliver real-time threat analysis, interactive incident investigation, and structured incident reporting.
 
 ### What It Does
 
@@ -63,8 +63,6 @@
 | **PDF Generation**  | fpdf2 with HTML rendering                          |
 | **Frontend**        | Tailwind CSS, Marked.js, DOMPurify, Font Awesome 6 |
 | **Fonts**           | Space Grotesk (headings), Inter (body)             |
-
-> **100% Local & Private** — IntelliBlue runs entirely on your machine. No API keys, no cloud services, no telemetry. Your security data never leaves your device.
 
 ---
 
@@ -111,6 +109,7 @@
 | **Real-Time Dashboard**        | The dashboard shows live counts of total ingested logs, active alerts, AI engine status, and the three most recent alerts with severity badges and direct links.                                        |
 | **Deleted Alert Detection**    | If a log's corresponding alert was deleted, clicking "View Alert" in the logs page shows a graceful animated notification instead of an error.                                                          |
 | **Security-First Design**      | Secure filename handling, file extension whitelisting, input sanitization (DOMPurify), prompt injection protection, parameterized DB queries, and automatic temp file cleanup.                          |
+| **100% Offline Capable**       | Runs entirely locally on your machine. No internet connection, cloud APIs, or external telemetry required, ensuring complete data privacy for sensitive security logs.                                  |
 
 ---
 
