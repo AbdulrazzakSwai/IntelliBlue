@@ -2,49 +2,56 @@
 
 set -e
 
-echo ""
+# Define colors
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
+NC='\033[0m'
+
+echo -e "${CYAN}"
 echo "  ============================================================"
 echo "       IntelliBlue - Automated Installer for Linux"
 echo "  ============================================================"
-echo ""
+echo -e "${NC}"
 
 # -------------------------------------------
 # Pre-requisite Checks
 # -------------------------------------------
-echo "  [1/6] Checking for required tools..."
+echo -e "${YELLOW}  [*] [1/6] Checking for required tools...${NC}"
 
 # Check Git
 if command -v git &>/dev/null; then
     GITVER=$(git --version | awk '{print $3}')
-    echo "        Found Git: $GITVER"
+    echo -e "${GREEN}      [+] Found Git: $GITVER${NC}"
 else
-    echo "        Git is NOT installed."
+    echo -e "${RED}      [-] Git is NOT installed.${NC}"
     GIT_MISSING=1
 fi
 
 # Check Python 3
 if command -v python3 &>/dev/null; then
     PYVER=$(python3 --version 2>&1 | awk '{print $2}')
-    echo "        Found Python 3: $PYVER"
+    echo -e "${GREEN}      [+] Found Python 3: $PYVER${NC}"
 else
-    echo "        Python 3 is NOT installed."
+    echo -e "${RED}      [-] Python 3 is NOT installed.${NC}"
     PY_MISSING=1
 fi
 
 # Check Ollama
 if command -v ollama &>/dev/null; then
     OLLAMAVER=$(ollama --version)
-    echo "        Found Ollama: $OLLAMAVER"
+    echo -e "${GREEN}      [+] Found Ollama: $OLLAMAVER${NC}"
 else
-    echo "        Ollama is NOT installed."
+    echo -e "${RED}      [-] Ollama is NOT installed.${NC}"
     OLLAMA_MISSING=1
 fi
 
 # Check libpcap
 if dpkg -s libpcap-dev &>/dev/null 2>&1 || rpm -q libpcap-devel &>/dev/null 2>&1 || pacman -Qs libpcap &>/dev/null 2>&1; then
-    echo "        Found libpcap."
+    echo -e "${GREEN}      [+] Found libpcap.${NC}"
 else
-    echo "        libpcap is NOT installed."
+    echo -e "${RED}      [-] libpcap is NOT installed.${NC}"
     PCAP_MISSING=1
 fi
 
@@ -53,10 +60,10 @@ echo ""
 # -------------------------------------------
 # Install Missing Tools
 # -------------------------------------------
-echo "  [2/6] Installing missing tools..."
+echo -e "${YELLOW}  [*] [2/6] Installing missing tools...${NC}"
 
 if [ "$GIT_MISSING" = "1" ] || [ "$PY_MISSING" = "1" ] || [ "$PCAP_MISSING" = "1" ]; then
-    echo "        Updating package manager and installing missing tools..."
+    echo -e "${CYAN}      [*] Updating package manager and installing missing tools...${NC}"
     if command -v apt-get &>/dev/null; then
         sudo apt-get update -qq >/dev/null 2>&1
         [ "$GIT_MISSING" = "1" ] && sudo apt-get install -y -qq git >/dev/null 2>&1
@@ -71,22 +78,22 @@ if [ "$GIT_MISSING" = "1" ] || [ "$PY_MISSING" = "1" ] || [ "$PCAP_MISSING" = "1
         [ "$PY_MISSING" = "1" ] && sudo pacman -Sy --noconfirm -q python python-pip >/dev/null 2>&1
         [ "$PCAP_MISSING" = "1" ] && sudo pacman -Sy --noconfirm -q libpcap >/dev/null 2>&1
     else
-        echo "  [X] Could not detect package manager to install tools."
-        echo "      Please install Git, Python 3, and libpcap manually."
+        echo -e "${RED}  [-] Could not detect package manager to install tools.${NC}"
+        echo -e "${RED}      Please install Git, Python 3, and libpcap manually.${NC}"
         exit 1
     fi
-    echo "        Tools installed successfully."
+    echo -e "${GREEN}      [+] Tools installed successfully.${NC}"
 fi
 
 if [ "$OLLAMA_MISSING" = "1" ]; then
-    echo "        Installing Ollama..."
+    echo -e "${CYAN}      [*] Installing Ollama...${NC}"
     curl -fsSL https://ollama.com/install.sh | sh >/dev/null 2>&1
     if [ $? -ne 0 ]; then
-        echo "  [X] Ollama installation failed."
-        echo "      Please install it manually from https://ollama.com"
+        echo -e "${RED}  [-] Ollama installation failed.${NC}"
+        echo -e "${RED}      Please install it manually from https://ollama.com${NC}"
         exit 1
     fi
-    echo "        Ollama installed successfully."
+    echo -e "${GREEN}      [+] Ollama installed successfully.${NC}"
 fi
 
 echo ""
@@ -94,29 +101,29 @@ echo ""
 # -------------------------------------------
 # Llama 3 Setup
 # -------------------------------------------
-echo "  [3/6] Setting up Llama 3 model..."
+echo -e "${YELLOW}  [*] [3/6] Setting up Llama 3 model...${NC}"
 
 # Start Ollama service if not running
 if ! pgrep -x "ollama" &>/dev/null; then
-    echo "        Starting Ollama service..."
+    echo -e "${CYAN}      [*] Starting Ollama service...${NC}"
     ollama serve &>/dev/null &
     sleep 3
 fi
 
 if ollama list 2>/dev/null | grep -qi "llama3"; then
-    echo "        Llama 3 model already installed."
+    echo -e "${GREEN}      [+] Llama 3 model already installed.${NC}"
 else
-    echo "        Pulling Llama 3 model via Ollama (This may take a while)..."
+    echo -e "${CYAN}      [*] Pulling Llama 3 model via Ollama (This may take a while)...${NC}"
     ollama pull llama3
     if [ $? -ne 0 ]; then
-        echo "  [!] Failed to pull Llama 3 model."
-        echo "      Make sure Ollama is running and try:  ollama pull llama3"
+        echo -e "${RED}  [-] Failed to pull Llama 3 model.${NC}"
+        echo -e "${RED}      Make sure Ollama is running and try:  ollama pull llama3${NC}"
     else
-        echo "        Llama 3 model ready."
+        echo -e "${GREEN}      [+] Llama 3 model ready.${NC}"
     fi
 fi
 
-echo "        Initializing Llama 3 model..."
+echo -e "${CYAN}      [*] Initializing Llama 3 model...${NC}"
 ollama run llama3 "system initialization" > /dev/null 2>&1 || true
 
 echo ""
@@ -124,11 +131,11 @@ echo ""
 # -------------------------------------------
 # Clone Repository
 # -------------------------------------------
-echo "  [4/6] Cloning IntelliBlue repository..."
+echo -e "${YELLOW}  [*] [4/6] Cloning IntelliBlue repository...${NC}"
 INSTALL_DIR="$HOME/IntelliBlue"
 if [ -d "$INSTALL_DIR" ]; then
-    echo "        Directory already exists at $INSTALL_DIR"
-    echo "        Skipping clone. (Remove directory to re-clone)"
+    echo -e "${CYAN}      [*] Directory already exists at $INSTALL_DIR${NC}"
+    echo -e "${CYAN}      [*] Skipping clone. (Remove directory to re-clone)${NC}"
     cd "$INSTALL_DIR"
 else
     git clone https://github.com/AbdulrazzakSwai/IntelliBlue.git "$INSTALL_DIR" -q >/dev/null 2>&1
@@ -140,10 +147,10 @@ echo ""
 # -------------------------------------------
 # Python VENV
 # -------------------------------------------
-echo "  [5/6] Setting up Python virtual environment..."
+echo -e "${YELLOW}  [*] [5/6] Setting up Python virtual environment...${NC}"
 if [ ! -d "venv" ]; then
     python3 -m venv venv >/dev/null 2>&1
-    echo "        Created virtual environment (venv/)."
+    echo -e "${GREEN}      [+] Created virtual environment (venv/).${NC}"
 fi
 
 source venv/bin/activate
@@ -152,20 +159,21 @@ echo ""
 # -------------------------------------------
 # Install Dependencies
 # -------------------------------------------
-echo "  [6/6] Installing Python dependencies..."
+echo -e "${YELLOW}  [*] [6/6] Installing Python dependencies...${NC}"
 pip install --upgrade pip --quiet >/dev/null 2>&1
 pip install -r requirements.txt --quiet >/dev/null 2>&1
 if [ $? -ne 0 ]; then
-    echo "  [X] Failed to install Python dependencies."
+    echo -e "${RED}  [-] Failed to install Python dependencies.${NC}"
     exit 1
 fi
-echo "        Dependencies installed successfully."
+echo -e "${GREEN}      [+] Dependencies installed successfully.${NC}"
 
 echo ""
+echo -e "${CYAN}"
 echo "  ============================================================"
 echo "           Installation Complete!"
 echo "  ============================================================"
-echo ""
+echo -e "${NC}"
 echo "  To start IntelliBlue at any time:"
 echo ""
 echo "      cd $INSTALL_DIR"
@@ -173,10 +181,13 @@ echo "      source venv/bin/activate"
 echo "      python3 app.py"
 echo ""
 echo "  The application will be available at http://localhost:5000"
+echo -e "${CYAN}"
 echo "  ============================================================"
+echo -e "${NC}"
 echo ""
 
-read -p "Would you like to run IntelliBlue now? (y/n) " response
+read -p "[?] Would you like to run IntelliBlue now? (y/n) " response
 if [[ "$response" =~ ^[Yy]$ ]]; then
+    echo -e "${CYAN}[*] Starting IntelliBlue...${NC}"
     python3 app.py
 fi
