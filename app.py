@@ -488,14 +488,11 @@ Provide a high-level overview suitable for management. Include a brief incident 
 ## Severity Level
 State the severity as exactly one of: Low, Medium, High, or Critical. Write the word alone on the line directly below the heading.
 
-## Artifact Details
-List the objective technical information identifying the analyzed item: file name, file type, source location, and any relevant timestamps found in the data.
-
 ## Analysis Methodology and Findings
 Detail the investigation steps and discoveries. Cover results from static analysis (e.g., file metadata, string analysis), dynamic analysis (e.g., observed behavior, network calls), and any log correlation performed.
 
 ## Indicators of Compromise (IOCs)
-Provide a categorized bulleted list of actionable network and host artifacts. This includes malicious IPs, URLs, domains, file hashes, registry keys, or process names that defense teams can use to update security tools.
+Provide a categorized bulleted list of actionable network and host artifacts. This includes malicious IPs, URLs, domains, file hashes, registry keys, or process names that defense teams can use to update security tools. If any of this data doesn't exist in the analyzed file, no need to fabricate it—just omit that category.
 
 ## Impact Assessment
 Evaluate the incident's consequences: the scope of infection, any unauthorized data exposure, and the extent of business or network disruption.
