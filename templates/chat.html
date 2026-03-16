@@ -3,27 +3,30 @@
 {% block title %}IntelliBlue Chat Assistant{% endblock %}
 
 {% block content %}
-<div class="flex flex-col h-full bg-gray-900/50 backdrop-blur-md rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.6)] border border-gray-700 overflow-hidden">
+<div class="flex flex-col h-full glass-panel border-gray-700/60 rounded-2xl overflow-hidden animate-fade-in-left">
     
-    <div id="chatWindow" class="flex-1 p-6 overflow-y-auto space-y-6">
+    <div id="chatWindow" class="flex-1 p-6 overflow-y-auto space-y-6 custom-scrollbar relative z-10">
         
         {% for msg in history %}
             {% if msg.sender == 'User' %}
                 <div class="flex justify-end">
-                    <div class="bg-gradient-to-br from-cyber-blue to-blue-700 text-white p-4 rounded-2xl rounded-tr-sm max-w-2xl shadow-[0_4px_15px_rgba(14,165,233,0.3)] font-sans border border-blue-500/30 user-message-text" data-raw-text="{{ msg.text|urlencode }}">
-                        <div class="flex items-center mb-1 pb-1 border-b border-blue-400/30 opacity-80 justify-end">
-                            <span class="text-[10px] uppercase tracking-widest font-display font-medium mr-2">You</span>
-                            <i class="fa-solid fa-user-astronaut text-xs"></i>
+                    <div class="bg-gradient-to-br from-cyber-blue/20 to-blue-900/40 text-gray-100 p-4 rounded-2xl rounded-tr-sm max-w-2xl shadow-[0_4px_15px_rgba(47,129,247,0.15)] font-sans border border-cyber-blue/40 user-message-text backdrop-blur-sm" data-raw-text="{{ msg.text|urlencode }}">
+                        <div class="flex items-center mb-2 pb-1 border-b border-cyber-blue/20 opacity-80 justify-end">
+                            <span class="text-[10px] uppercase tracking-[0.2em] font-display font-bold mr-2 text-cyber-blue">You</span>
+                            <i class="fa-solid fa-user-astronaut text-xs text-cyber-blue"></i>
                         </div>
                         {{ msg.text }}
                     </div>
                 </div>
             {% else %}
-                <div class="flex justify-start {% if loop.first and history|length == 1 %}animate-fade-in{% endif %}">
-                    <div class="bg-gray-800 text-gray-200 p-5 rounded-2xl rounded-tl-sm max-w-2xl shadow-[0_4px_15px_rgba(0,0,0,0.4)] border border-gray-700 relative overflow-hidden group">
-                        <div class="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-cyber-neon to-cyber-blue opacity-80 group-hover:opacity-100 transition-opacity"></div>
-                        <span class="font-bold text-cyber-neon text-xs uppercase tracking-widest block mb-3 border-b border-gray-700 pb-2 font-display flex items-center">
-                            <i class="fa-solid fa-robot mr-2 drop-shadow-[0_0_5px_rgba(56,189,248,0.8)]"></i> IntelliBlue AI
+                <div class="flex justify-start">
+                    <div class="bg-gray-900/80 text-gray-200 p-6 rounded-2xl rounded-tl-sm max-w-2xl shadow-[0_4px_15px_rgba(0,0,0,0.4)] border border-gray-700/80 relative overflow-hidden group backdrop-blur-md">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-cyber-neon to-cyber-blue opacity-80 group-hover:opacity-100 transition-opacity shadow-[0_0_10px_#58a6ff]"></div>
+                        <span class="font-bold text-cyber-blue text-xs uppercase tracking-[0.2em] block mb-4 border-b border-gray-800 pb-2 font-display flex items-center">
+                            <div class="bg-cyber-blue/10 p-1.5 rounded mr-2 border border-cyber-blue/20">
+                                <i class="fa-solid fa-robot drop-shadow-[0_0_5px_rgba(47,129,247,0.8)]"></i>
+                            </div> 
+                            IntelliBlue AI
                         </span>
                         <div {% if loop.first and history|length == 1 %}data-welcome="true"{% endif %} class="ai-message-content prose prose-invert prose-base max-w-none text-gray-300 font-sans leading-relaxed">{{ msg.text }}</div>
                     </div>
@@ -32,18 +35,18 @@
         {% endfor %}
         
         <div id="regenerateContainer" class="hidden flex justify-start my-2 max-w-2xl">
-            <button type="button" onclick="resendLastPrompt()" class="flex items-center text-xs font-display tracking-widest uppercase text-gray-400 hover:text-cyber-neon transition-colors px-4 py-2 rounded-lg bg-gray-800/80 border border-gray-700 hover:border-cyber-blue shadow-sm">
+            <button type="button" onclick="resendLastPrompt()" class="flex items-center text-xs font-display tracking-widest uppercase text-gray-400 hover:text-cyber-blue transition-colors px-4 py-2 rounded-lg bg-gray-900/80 border border-gray-700 hover:border-cyber-blue shadow-sm">
                 <i class="fa-solid fa-rotate-right mr-2"></i> Resend Last Prompt
             </button>
         </div>
 
     </div>
 
-    <div class="p-5 bg-gray-850 border-t border-gray-700">
+    <div class="p-5 bg-gray-900/90 border-t border-gray-800 backdrop-blur-lg relative z-20">
         <form id="chatForm" class="flex space-x-4" onsubmit="sendMessage(event)">
-            <div class="flex-1 flex bg-gray-900 border border-gray-600 rounded-lg overflow-hidden focus-within:border-cyber-blue focus-within:shadow-[0_0_10px_rgba(14,165,233,0.3)] transition-all duration-300">
-                <select id="alertContext" class="bg-gray-800 text-gray-300 border-r border-gray-700 px-3 py-4 focus:outline-none max-w-[220px] truncate text-sm hover:bg-gray-700 cursor-pointer font-display tracking-wide font-medium appearance-none">
-                    <option value="">No context attached</option>
+            <div class="flex-1 flex bg-gray-950 border border-gray-700 rounded-xl overflow-hidden focus-within:border-cyber-blue focus-within:shadow-[0_0_15px_rgba(47,129,247,0.2)] transition-all duration-300">
+                <select id="alertContext" class="bg-gray-900 border-r border-gray-800 px-4 py-4 focus:outline-none max-w-[220px] truncate text-sm hover:bg-gray-800 cursor-pointer font-display tracking-wide font-medium appearance-none text-gray-400">
+                    <option value="">No Context Attached</option>
                     {% for alert in global_alerts %}
                         <option value="{{ alert.id }}">🔗 {{ alert.title }}</option>
                     {% endfor %}

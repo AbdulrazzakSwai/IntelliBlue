@@ -4,10 +4,10 @@
 
 {% block content %}
 <div class="mb-6 flex justify-between items-center">
-    <h3 class="text-2xl font-bold text-white font-display tracking-wide flex items-center">
+    <h3 class="text-2xl font-bold text-white font-display tracking-wide flex items-center animate-fade-in-left">
         <i class="fa-solid fa-folder-open text-cyber-blue mr-3 drop-shadow-[0_0_8px_rgba(14,165,233,0.8)]"></i> Archived Reports
     </h3>
-    <div class="flex gap-3">
+    <div class="flex gap-3 animate-fade-in-right">
         <div class="relative">
             <select id="severityFilter" onchange="filterItems()" class="bg-gray-800 border border-gray-600 text-gray-300 text-sm rounded-lg px-4 py-2.5 outline-none focus:border-cyber-blue transition-colors appearance-none pr-10 font-display">
                 <option value="all">All Severities</option>
@@ -32,57 +32,63 @@
     </div>
 </div>
 
-<div class="bg-gray-850 rounded-xl border border-gray-700 shadow-[0_8px_30px_rgba(0,0,0,0.5)] overflow-hidden">
-    <div class="overflow-x-auto">
-        <table class="w-full text-sm text-left text-gray-400">
-            <thead class="text-xs text-gray-300 uppercase font-display tracking-widest bg-gray-900 border-b border-gray-700">
+<div class="bg-gray-850 rounded-xl border border-gray-700 shadow-[0_8px_30px_rgba(0,0,0,0.5)] overflow-hidden animate-slide-up group neo-glow transition-all duration-500 relative">
+    <div class="absolute inset-0 bg-gradient-to-br from-cyber-blue/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+    <div class="absolute -left-10 -top-10 w-32 h-32 bg-cyber-blue/20 rounded-full blur-3xl group-hover:bg-cyber-blue/30 transition-all duration-500 pointer-events-none"></div>
+    <div class="overflow-x-auto relative z-10">
+        <table class="w-full text-sm text-center align-middle text-gray-400">
+            <thead class="text-xs text-center text-gray-300 uppercase font-display tracking-widest bg-gray-900 border-b border-gray-700">
                 <tr>
-                    <th class="px-6 py-4">Report ID / Title</th>
-                    <th class="px-6 py-4">Severity</th>
-                    <th class="px-6 py-4">Date Generated</th>
-                    <th class="px-6 py-4 text-right">Actions</th>
+                    <th class="px-6 py-4 text-center">Report ID / Title</th>
+                    <th class="px-6 py-4 text-center">Severity</th>
+                    <th class="px-6 py-4 text-center">Date Generated</th>
+                    <th class="px-6 py-4 text-center">Actions</th>
                 </tr>
             </thead>
             <tbody>
                 {% for report in reports %}
                 <tr class="report-item border-b border-gray-800 hover:bg-gray-800 transition-colors" data-severity="{{ report.severity }}" data-title="{{ report.title.lower() }}">
-                    <td class="px-6 py-4 font-medium text-white flex items-center">
-                        <i class="fa-solid fa-file-shield text-cyber-blue mr-3 opacity-80"></i> {{ report.title }}
+                    <td class="px-6 py-4 font-medium text-white align-middle">
+                        <div class="flex items-center justify-center">
+                            <i class="fa-solid fa-file-shield text-cyber-blue mr-3 opacity-80"></i> {{ report.title }}
+                        </div>
                     </td>
-                    <td class="px-6 py-4">
+                    <td class="px-6 py-4 align-middle">
                         {% if report.severity == 'Critical' %}
-                        <span class="px-3 py-1.5 bg-purple-900/50 text-purple-400 text-xs font-bold uppercase rounded-md border border-purple-700 shadow-[0_0_10px_rgba(168,85,247,0.2)] tracking-widest flex items-center inline-flex">
+                        <span class="px-3 py-1.5 bg-purple-900/50 text-purple-400 text-xs font-bold uppercase rounded-md border border-purple-700 shadow-[0_0_10px_rgba(168,85,247,0.2)] tracking-widest flex items-center justify-center inline-flex">
                             <i class="fa-solid fa-skull-crossbones mr-1.5"></i> {{ report.severity }}
                         </span>
                         {% elif report.severity == 'High' %}
-                        <span class="px-3 py-1.5 bg-red-900/50 text-red-400 text-xs font-bold uppercase rounded-md border border-red-700 shadow-[0_0_10px_rgba(220,38,38,0.2)] tracking-widest flex items-center inline-flex">
+                        <span class="px-3 py-1.5 bg-red-900/50 text-red-400 text-xs font-bold uppercase rounded-md border border-red-700 shadow-[0_0_10px_rgba(220,38,38,0.2)] tracking-widest flex items-center justify-center inline-flex">
                             <i class="fa-solid fa-fire mr-1.5"></i> {{ report.severity }}
                         </span>
                         {% elif report.severity == 'Medium' %}
-                        <span class="px-3 py-1.5 bg-orange-900/50 text-orange-400 text-xs font-bold uppercase rounded-md border border-orange-700 shadow-[0_0_10px_rgba(249,115,22,0.2)] tracking-widest flex items-center inline-flex">
+                        <span class="px-3 py-1.5 bg-orange-900/50 text-orange-400 text-xs font-bold uppercase rounded-md border border-orange-700 shadow-[0_0_10px_rgba(249,115,22,0.2)] tracking-widest flex items-center justify-center inline-flex">
                             <i class="fa-solid fa-bolt mr-1.5"></i> {{ report.severity }}
                         </span>
                         {% else %}
-                        <span class="px-3 py-1.5 bg-green-900/50 text-green-400 text-xs font-bold uppercase rounded-md border border-green-700 shadow-[0_0_10px_rgba(34,197,94,0.2)] tracking-widest flex items-center inline-flex">
+                        <span class="px-3 py-1.5 bg-green-900/50 text-green-400 text-xs font-bold uppercase rounded-md border border-green-700 shadow-[0_0_10px_rgba(34,197,94,0.2)] tracking-widest flex items-center justify-center inline-flex">
                             <i class="fa-solid fa-shield-virus mr-1.5"></i> {{ report.severity }}
                         </span>
                         {% endif %}
                     </td>
-                    <td class="px-6 py-4 font-mono text-xs">{{ report.date_created.strftime('%Y-%m-%d %H:%M UTC') }}</td>
-                    <td class="px-6 py-4 text-right space-x-4">
-                        <form action="{{ url_for('restore_alert', report_id=report.id) }}" method="POST" class="inline">
-                            <button type="submit" class="text-cyber-blue hover:text-cyber-neon font-bold font-display uppercase text-xs tracking-wider transition-all inline-flex items-center hover:scale-105">
-                                <i class="fa-solid fa-arrow-rotate-left mr-1.5"></i> Reopen
-                            </button>
-                        </form>
-                        <a href="{{ url_for('export_report_pdf', report_id=report.id) }}" class="text-green-400 hover:text-green-300 font-bold font-display uppercase text-xs tracking-wider transition-all inline-flex items-center hover:scale-105">
-                            <i class="fa-solid fa-file-pdf mr-1.5"></i> PDF
-                        </a>
-                        <form action="{{ url_for('delete_report', report_id=report.id) }}" method="POST" class="inline" onsubmit="showDeleteModal(event, this, 'Are you sure you want to permanently delete this generated report?');">
-                            <button type="submit" class="text-red-500 hover:text-red-400 font-bold font-display uppercase text-xs tracking-wider transition-all inline-flex items-center hover:scale-105">
-                                <i class="fa-solid fa-trash-can mr-1.5"></i> Delete
-                            </button>
-                        </form>
+                    <td class="px-6 py-4 font-mono text-xs align-middle">{{ report.date_created.strftime('%Y-%m-%d %H:%M UTC') }}</td>
+                    <td class="px-6 py-4 text-center align-middle">
+                        <div class="flex items-center justify-center space-x-4">
+                            <form action="{{ url_for('restore_alert', report_id=report.id) }}" method="POST" class="m-0 flex">
+                                <button type="submit" class="text-cyber-blue hover:text-cyber-neon font-bold font-display uppercase text-xs tracking-wider transition-all inline-flex items-center hover:scale-105">
+                                    <i class="fa-solid fa-arrow-rotate-left mr-1.5"></i> Reopen
+                                </button>
+                            </form>
+                            <a href="{{ url_for('export_report_pdf', report_id=report.id) }}" class="text-green-400 hover:text-green-300 font-bold font-display uppercase text-xs tracking-wider transition-all inline-flex items-center hover:scale-105">
+                                <i class="fa-solid fa-file-pdf mr-1.5"></i> PDF
+                            </a>
+                            <form action="{{ url_for('delete_report', report_id=report.id) }}" method="POST" class="m-0 flex" onsubmit="showDeleteModal(event, this, 'Are you sure you want to permanently delete this generated report?');">
+                                <button type="submit" class="text-red-500 hover:text-red-400 font-bold font-display uppercase text-xs tracking-wider transition-all inline-flex items-center hover:scale-105">
+                                    <i class="fa-solid fa-trash-can mr-1.5"></i> Delete
+                                </button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
 
@@ -126,70 +132,76 @@
 </div>
 
 <div class="mt-10 mb-6 flex justify-between items-center">
-    <h3 class="text-2xl font-bold text-white font-display tracking-wide flex items-center">
+    <h3 class="text-2xl font-bold text-white font-display tracking-wide flex items-center animate-fade-in-left">
         <i class="fa-solid fa-flag text-yellow-500 mr-3 drop-shadow-[0_0_8px_rgba(234,179,8,0.8)]"></i> False Positives
     </h3>
 </div>
 
-<div class="bg-gray-850 rounded-xl border border-yellow-900/50 shadow-[0_8px_30px_rgba(0,0,0,0.5)] overflow-hidden">
-    <div class="overflow-x-auto">
-        <table class="w-full text-sm text-left text-gray-400">
-            <thead class="text-xs text-gray-300 uppercase font-display tracking-widest bg-gray-900 border-b border-gray-700">
+<div class="bg-gray-850 rounded-xl border border-yellow-900/50 shadow-[0_8px_30px_rgba(0,0,0,0.5)] overflow-hidden animate-slide-up transition-all duration-500 hover:border-yellow-600/50 hover:shadow-[0_0_20px_rgba(202,138,4,0.15),inset_0_0_20px_rgba(202,138,4,0.05)] relative group">
+    <div class="absolute inset-0 bg-gradient-to-br from-yellow-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+    <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-yellow-600/10 rounded-full blur-3xl group-hover:bg-yellow-500/10 transition-all duration-500 pointer-events-none"></div>
+    <div class="overflow-x-auto relative z-10">
+        <table class="w-full text-sm text-center align-middle text-gray-400">
+            <thead class="text-xs text-center text-gray-300 uppercase font-display tracking-widest bg-gray-900 border-b border-gray-700">
                 <tr>
-                    <th class="px-6 py-4">Alert Title</th>
-                    <th class="px-6 py-4">Severity</th>
-                    <th class="px-6 py-4">Analyst Reason</th>
-                    <th class="px-6 py-4">Date</th>
-                    <th class="px-6 py-4 text-right">Actions</th>
+                    <th class="px-6 py-4 text-center">Alert Title</th>
+                    <th class="px-6 py-4 text-center">Severity</th>
+                    <th class="px-6 py-4 text-center">Analyst Reason</th>
+                    <th class="px-6 py-4 text-center">Date</th>
+                    <th class="px-6 py-4 text-center">Actions</th>
                 </tr>
             </thead>
             <tbody>
                 {% for fp in fp_reports %}
                 <tr class="fp-item border-b border-gray-800 hover:bg-gray-800 transition-colors" data-severity="{{ fp.severity }}" data-title="{{ fp.title.lower() }}">
-                    <td class="px-6 py-4 font-medium text-white flex items-center">
-                        <i class="fa-solid fa-flag text-yellow-500 mr-3 opacity-80"></i> {{ fp.title }}
+                    <td class="px-6 py-4 font-medium text-white align-middle">
+                        <div class="flex items-center justify-center">
+                            <i class="fa-solid fa-flag text-yellow-500 mr-3 opacity-80"></i> {{ fp.title }}
+                        </div>
                     </td>
-                    <td class="px-6 py-4">
+                    <td class="px-6 py-4 align-middle">
                         {% if fp.severity == 'Critical' %}
-                        <span class="px-3 py-1.5 bg-purple-900/50 text-purple-400 text-xs font-bold uppercase rounded-md border border-purple-700 tracking-widest inline-flex items-center">
+                        <span class="px-3 py-1.5 bg-purple-900/50 text-purple-400 text-xs font-bold uppercase rounded-md border border-purple-700 tracking-widest inline-flex items-center justify-center">
                             <i class="fa-solid fa-skull-crossbones mr-1.5"></i> {{ fp.severity }}
                         </span>
                         {% elif fp.severity == 'High' %}
-                        <span class="px-3 py-1.5 bg-red-900/50 text-red-400 text-xs font-bold uppercase rounded-md border border-red-700 tracking-widest inline-flex items-center">
+                        <span class="px-3 py-1.5 bg-red-900/50 text-red-400 text-xs font-bold uppercase rounded-md border border-red-700 tracking-widest inline-flex items-center justify-center">
                             <i class="fa-solid fa-fire mr-1.5"></i> {{ fp.severity }}
                         </span>
                         {% elif fp.severity == 'Medium' %}
-                        <span class="px-3 py-1.5 bg-orange-900/50 text-orange-400 text-xs font-bold uppercase rounded-md border border-orange-700 tracking-widest inline-flex items-center">
+                        <span class="px-3 py-1.5 bg-orange-900/50 text-orange-400 text-xs font-bold uppercase rounded-md border border-orange-700 tracking-widest inline-flex items-center justify-center">
                             <i class="fa-solid fa-bolt mr-1.5"></i> {{ fp.severity }}
                         </span>
                         {% else %}
-                        <span class="px-3 py-1.5 bg-green-900/50 text-green-400 text-xs font-bold uppercase rounded-md border border-green-700 tracking-widest inline-flex items-center">
+                        <span class="px-3 py-1.5 bg-green-900/50 text-green-400 text-xs font-bold uppercase rounded-md border border-green-700 tracking-widest inline-flex items-center justify-center">
                             <i class="fa-solid fa-shield-virus mr-1.5"></i> {{ fp.severity }}
                         </span>
                         {% endif %}
                     </td>
-                    <td class="px-6 py-4 text-gray-400 text-xs max-w-xs truncate" title="{{ fp.fp_reason or 'No reason provided' }}">
+                    <td class="px-6 py-4 text-gray-400 text-xs max-w-xs truncate align-middle mx-auto text-center" title="{{ fp.fp_reason or 'No reason provided' }}">
                         {% if fp.fp_reason %}
                         <i class="fa-solid fa-quote-left text-yellow-600 mr-1.5 text-[10px]"></i>{{ fp.fp_reason }}
                         {% else %}
                         <span class="text-gray-600 italic">No reason provided</span>
                         {% endif %}
                     </td>
-                    <td class="px-6 py-4 font-mono text-xs">{{ fp.date_created.strftime('%Y-%m-%d %H:%M UTC') }}</td>
-                    <td class="px-6 py-4 text-right space-x-4">
-                        <form action="{{ url_for('restore_alert', report_id=fp.id) }}" method="POST" class="inline">
-                            <button type="submit" class="text-cyber-blue hover:text-cyber-neon font-bold font-display uppercase text-xs tracking-wider transition-all inline-flex items-center hover:scale-105">
-                                <i class="fa-solid fa-arrow-rotate-left mr-1.5"></i> Reopen
-                            </button>
-                        </form>
-                        <a href="{{ url_for('export_report_pdf', report_id=fp.id) }}" class="text-green-400 hover:text-green-300 font-bold font-display uppercase text-xs tracking-wider transition-all inline-flex items-center hover:scale-105">
-                            <i class="fa-solid fa-file-pdf mr-1.5"></i> PDF
-                        </a>
-                        <form action="{{ url_for('delete_report', report_id=fp.id) }}" method="POST" class="inline" onsubmit="showDeleteModal(event, this, 'Are you sure you want to permanently delete this false positive report?');">
-                            <button type="submit" class="text-red-500 hover:text-red-400 font-bold font-display uppercase text-xs tracking-wider transition-all inline-flex items-center hover:scale-105">
-                                <i class="fa-solid fa-trash-can mr-1.5"></i> Delete
-                            </button>
-                        </form>
+                    <td class="px-6 py-4 font-mono text-xs align-middle">{{ fp.date_created.strftime('%Y-%m-%d %H:%M UTC') }}</td>
+                    <td class="px-6 py-4 text-center align-middle">
+                        <div class="flex items-center justify-center space-x-4">
+                            <form action="{{ url_for('restore_alert', report_id=fp.id) }}" method="POST" class="m-0 flex">
+                                <button type="submit" class="text-cyber-blue hover:text-cyber-neon font-bold font-display uppercase text-xs tracking-wider transition-all inline-flex items-center hover:scale-105">
+                                    <i class="fa-solid fa-arrow-rotate-left mr-1.5"></i> Reopen
+                                </button>
+                            </form>
+                            <a href="{{ url_for('export_report_pdf', report_id=fp.id) }}" class="text-green-400 hover:text-green-300 font-bold font-display uppercase text-xs tracking-wider transition-all inline-flex items-center hover:scale-105">
+                                <i class="fa-solid fa-file-pdf mr-1.5"></i> PDF
+                            </a>
+                            <form action="{{ url_for('delete_report', report_id=fp.id) }}" method="POST" class="m-0 flex" onsubmit="showDeleteModal(event, this, 'Are you sure you want to permanently delete this false positive report?');">
+                                <button type="submit" class="text-red-500 hover:text-red-400 font-bold font-display uppercase text-xs tracking-wider transition-all inline-flex items-center hover:scale-105">
+                                    <i class="fa-solid fa-trash-can mr-1.5"></i> Delete
+                                </button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 {% else %}

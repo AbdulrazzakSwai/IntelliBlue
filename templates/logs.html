@@ -5,76 +5,97 @@
 {% block content %}
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     
-    <div class="bg-gray-850 rounded-xl p-8 border border-gray-700 shadow-[0_8px_30px_rgba(0,0,0,0.5)] lg:col-span-1 h-fit relative overflow-hidden group">
-        <div class="absolute inset-0 bg-gradient-to-br from-cyber-blue/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-        <h3 class="text-xl font-bold text-white mb-6 border-b border-gray-700 pb-3 font-display tracking-wide relative z-10 flex items-center">
-            <i class="fa-solid fa-cloud-arrow-up mr-3 text-cyber-blue drop-shadow-[0_0_8px_rgba(14,165,233,0.8)]"></i> Upload New Logs
+    <div class="glass-panel rounded-2xl p-8 lg:col-span-1 h-fit relative overflow-hidden group neo-glow transition-all duration-500 animate-fade-in-left">
+        <div class="absolute inset-0 bg-gradient-to-br from-cyber-blue/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        <div class="absolute -left-10 -top-10 w-32 h-32 bg-cyber-blue/20 rounded-full blur-3xl group-hover:bg-cyber-blue/30 transition-all duration-500"></div>
+
+        <h3 class="text-xl font-bold text-white mb-6 border-b border-gray-700/60 pb-4 font-display tracking-wide relative z-10 flex items-center">
+            <div class="p-2 rounded-lg bg-cyber-blue/10 border border-cyber-blue/30 mr-3">
+                <i class="fa-solid fa-cloud-arrow-up text-cyber-blue drop-shadow-[0_0_8px_rgba(47,129,247,0.8)]"></i>
+            </div>
+            Data Ingestion
         </h3>
         
         <form id="uploadForm" class="space-y-6 relative z-10">
             <div>
-                <label class="block text-sm font-bold text-gray-400 mb-2 font-display tracking-wider uppercase">Select Security Log File (TXT, LOG, CSV, JSON, PCAP, PCAPNG)</label>
-                <input type="file" id="logFile" class="block w-full text-sm text-gray-400 file:mr-4 file:py-3 file:px-6 file:rounded-lg file:border-0 file:text-sm file:font-bold file:font-display file:tracking-wide file:bg-gradient-to-r file:from-gray-800 file:to-gray-700 file:text-white file:cursor-pointer hover:file:from-cyber-blue hover:file:to-blue-600 file:transition-all file:shadow-[0_4px_10px_rgba(0,0,0,0.3)] hover:file:shadow-[0_0_15px_rgba(14,165,233,0.4)] bg-gray-900 rounded-lg border border-gray-700 focus:outline-none cursor-pointer">
+                <label class="block text-xs font-bold text-gray-400 mb-3 font-display tracking-widest uppercase flex items-center gap-2">
+                    <i class="fa-solid fa-file-shield text-gray-500"></i> Supported Formats: TXT, LOG, CSV, JSON, PCAP, PCAPNG
+                </label>
+                <div class="relative group/input">
+                    <div class="absolute -inset-0.5 bg-gradient-to-r from-cyber-blue to-cyber-purple opacity-20 group-hover/input:opacity-50 blur rounded-lg transition duration-500"></div>
+                    <input type="file" id="logFile" class="relative block w-full text-sm text-gray-400 file:mr-4 file:py-3 file:px-6 file:rounded-lg file:border-0 file:text-sm file:font-bold file:font-display file:tracking-wide file:bg-gray-800 file:text-white file:cursor-pointer hover:file:bg-cyber-blue hover:file:text-white file:transition-all bg-gray-900/80 rounded-lg border border-gray-700 focus:outline-none cursor-pointer backdrop-blur-sm shadow-inner">
+                </div>
             </div>
             
-            <button type="button" id="analyzeBtn" onclick="uploadLog()" class="w-full bg-gradient-to-r from-cyber-blue to-blue-600 hover:from-cyber-neon hover:to-cyber-blue text-white font-bold py-3 px-4 rounded-lg transition-all mt-4 shadow-[0_0_15px_rgba(14,165,233,0.3)] hover:shadow-[0_0_20px_rgba(56,189,248,0.5)] font-display tracking-wider flex items-center justify-center group hover:-translate-y-0.5">
-                <i class="fa-solid fa-microchip mr-2 group-hover:scale-110 transition-transform"></i> Analyze with IntelliBlue
+            <button type="button" id="analyzeBtn" onclick="uploadLog()" class="w-full bg-gradient-to-r from-cyber-blue/20 to-blue-900/20 border border-cyber-blue/40 hover:from-cyber-blue/80 hover:to-blue-600/80 text-cyber-blue hover:text-white font-bold py-3.5 px-4 rounded-xl transition-all mt-4 shadow-[0_0_15px_rgba(47,129,247,0.15)] hover:shadow-[0_0_25px_rgba(47,129,247,0.4)] font-display tracking-wider flex items-center justify-center group overflow-hidden relative">
+                <i class="fa-solid fa-microchip mr-2 group-hover:animate-pulse-glow relative z-10"></i> 
+                <span class="relative z-10">Analyze Telemetry</span>
             </button>
-            <button type="button" id="cancelBtn" onclick="cancelUpload()" class="hidden w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3 px-4 rounded-lg transition-all mt-4 shadow-[0_0_15px_rgba(239,68,68,0.3)] font-display tracking-wider flex items-center justify-center">
-                <i class="fa-solid fa-ban mr-2"></i> Cancel Analysis
+            <button type="button" id="cancelBtn" onclick="cancelUpload()" class="hidden w-full bg-red-900/40 hover:bg-red-600 border border-red-500/50 text-red-100 font-bold py-3.5 px-4 rounded-xl transition-all mt-4 shadow-[0_0_15px_rgba(239,68,68,0.2)] font-display tracking-wider flex items-center justify-center relative overflow-hidden group">
+                <i class="fa-solid fa-ban mr-2 group-hover:scale-110 transition-transform"></i> Terminate Process
             </button>
         </form>
         
-        <div id="uploadStatus" class="mt-6 text-sm text-cyber-neon font-bold tracking-widest uppercase font-display hidden flex items-center justify-center">
-            <i class="fa-solid fa-circle-notch fa-spin text-cyber-neon mr-3 text-lg" style="--fa-animation-duration: 2s;"></i> Analyzing Data...
+        <div id="uploadStatus" class="mt-8 p-4 rounded-lg bg-cyber-blue/5 border border-cyber-blue/20 text-sm text-cyber-blue font-bold tracking-widest uppercase font-display hidden flex items-center justify-center relative overflow-hidden">
+            <div class="absolute left-0 bottom-0 w-full h-[2px] bg-cyber-blue opacity-50 animate-pulse"></div>
+            <i class="fa-solid fa-circle-notch fa-spin text-cyber-blue mr-3 text-lg"></i> Neural Processing...
         </div>
     </div>
 
-    <div class="bg-gray-850 rounded-xl p-8 border border-gray-700 shadow-[0_8px_30px_rgba(0,0,0,0.5)] lg:col-span-2">
-        <div class="flex justify-between items-center border-b border-gray-700 mb-6 pb-3">
+    <div class="glass-panel rounded-2xl p-8 border border-gray-700/60 lg:col-span-2 relative overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.5)] animate-fade-in-right group neo-glow transition-all duration-500">
+        <div class="absolute inset-0 bg-gradient-to-br from-cyber-blue/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        <div class="absolute -left-10 -top-10 w-32 h-32 bg-cyber-blue/20 rounded-full blur-3xl group-hover:bg-cyber-blue/30 transition-all duration-500"></div>
+        <div class="flex justify-between items-center border-b border-gray-700/50 mb-6 pb-4 relative z-10">
             <h3 class="text-xl font-bold text-white font-display tracking-wide flex items-center">
-                <i class="fa-solid fa-clock-rotate-left mr-3 text-cyber-blue drop-shadow-[0_0_8px_rgba(14,165,233,0.8)]"></i> Upload History
+                <div class="p-2 rounded-lg bg-gray-800 border border-gray-700 mr-3">
+                    <i class="fa-solid fa-clock-rotate-left text-gray-400"></i>
+                </div>
+                Ingestion History
             </h3>
             {% if logs %}
-            <form action="{{ url_for('clear_logs') }}" method="POST" onsubmit="showDeleteModal(event, this, 'Are you sure you want to clear your upload history?');">
-                <button type="submit" class="text-xs text-red-400 hover:text-white font-bold font-display uppercase tracking-widest transition-all bg-red-900/20 border border-red-900/50 hover:bg-red-600 hover:border-red-500 hover:shadow-[0_0_10px_rgba(220,38,38,0.4)] px-4 py-2 rounded-lg flex items-center">
-                    <i class="fa-solid fa-trash-can mr-2"></i> Clear History
+            <form action="{{ url_for('clear_logs') }}" method="POST" onsubmit="showDeleteModal(event, this, 'Purge entire telemetry history?');">
+                <button type="submit" class="text-xs text-red-500 hover:text-white font-bold font-display uppercase tracking-widest transition-all bg-red-500/10 border border-red-500/30 hover:bg-red-600 hover:border-red-500 hover:shadow-[0_0_15px_rgba(248,113,113,0.4)] px-4 py-2.5 rounded-lg flex items-center group">
+                    <i class="fa-solid fa-trash-can mr-2 group-hover:scale-110 transition-transform"></i> Purge
                 </button>
             </form>
             {% endif %}
         </div>
 
-        <div class="overflow-x-auto rounded-lg border border-gray-700">
-            <table class="w-full text-sm text-left text-gray-400">
-                <thead class="text-xs text-gray-300 uppercase bg-gray-900 rounded-t-lg font-display tracking-widest border-b border-gray-700">
+        <div class="overflow-x-auto rounded-xl border border-gray-800 bg-gray-900/30 backdrop-blur-sm">
+            <table class="w-full text-sm text-center align-middle text-gray-400">
+                <thead class="text-[10px] text-gray-500 uppercase bg-gray-950/80 font-display tracking-[0.2em] border-b border-gray-800">
                     <tr>
-                        <th class="px-6 py-4">Filename</th>
-                        <th class="px-6 py-4">File Type</th>
-                        <th class="px-6 py-4">Upload Date</th>
-                        <th class="px-6 py-4 text-right">Action</th>
+                        <th class="px-6 py-4 font-bold text-center">Telemetry Source</th>
+                        <th class="px-6 py-4 font-bold text-center">Format</th>
+                        <th class="px-6 py-4 font-bold text-center">Timestamp</th>
+                        <th class="px-6 py-4 text-center font-bold">Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="divide-y divide-gray-800">
                     {% for log in logs %}
-                    <tr class="border-b border-gray-800 hover:bg-gray-800 transition-colors">
-                        <td class="px-6 py-4 font-medium text-white flex items-center">
-                            <i class="fa-solid fa-file-code text-gray-500 mr-3"></i> {{ log.filename }}
+                    <tr class="hover:bg-gray-800/60 transition-colors group">
+                        <td class="px-6 py-4 font-medium text-gray-300 align-middle group-hover:text-white transition-colors">
+                            <div class="flex items-center justify-center">
+                                <i class="fa-solid fa-file-code text-cyber-blue/50 group-hover:text-cyber-blue mr-3 transition-colors"></i> {{ log.filename }}
+                            </div>
                         </td>
-                        <td class="px-6 py-4">
-                            <span class="bg-gray-900 border border-gray-700 shadow-inner px-3 py-1.5 rounded-md text-xs font-bold text-cyber-blue tracking-wider">{{ log.filename.split('.') | last | upper }}</span>
+                        <td class="px-6 py-4 align-middle">
+                            <span class="bg-gray-800/80 border border-gray-700 shadow-inner px-2.5 py-1 rounded text-[10px] font-bold text-cyber-blue tracking-wider font-mono">{{ log.filename.split('.') | last | upper }}</span>
                         </td>
-                        <td class="px-6 py-4 font-mono text-xs">{{ log.upload_date.strftime('%Y-%m-%d %H:%M UTC') }}</td>
-                        <td class="px-6 py-4 text-right">
-                            <button onclick="checkAndViewAlert('{{ log.filename }}')" class="text-cyber-neon hover:text-white font-bold transition-all cursor-pointer inline-flex items-center justify-end px-3 py-1.5 rounded-lg hover:bg-gray-700 border border-transparent hover:border-gray-600 tracking-wide font-display text-xs uppercase">
-                                <i class="fa-solid fa-eye mr-2"></i> View Alert
+                        <td class="px-6 py-4 font-mono text-[11px] text-gray-500 align-middle">{{ log.upload_date.strftime('%Y-%m-%d %H:%M UTC') }}</td>
+                        <td class="px-6 py-4 text-center align-middle">
+                            <button onclick="checkAndViewAlert('{{ log.filename }}')" class="text-cyber-blue bg-cyber-blue/10 border border-cyber-blue/20 hover:bg-cyber-blue hover:text-white hover:border-cyber-blue hover:shadow-[0_0_10px_rgba(47,129,247,0.4)] font-bold transition-all cursor-pointer inline-flex items-center justify-center px-3 py-1.5 rounded-lg tracking-wide font-display text-[10px] uppercase">
+                                <i class="fa-solid fa-eye mr-2"></i> View
                             </button>
                         </td>
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="4" class="px-6 py-12 text-center text-gray-500">
-                            <i class="fa-solid fa-folder-open text-4xl mb-3 opacity-20"></i>
-                            <p class="font-display tracking-wide">No logs have been uploaded yet.</p>
+                        <td colspan="4" class="px-6 py-16 text-center">
+                            <div class="flex flex-col items-center justify-center opacity-40">
+                                <i class="fa-solid fa-satellite text-4xl mb-4 text-gray-500"></i>
+                                <p class="font-display tracking-[0.2em] text-xs uppercase text-gray-400">Awaiting Telemetry Data</p>
+                            </div>
                         </td>
                     </tr>
                     {% endfor %}
@@ -84,46 +105,63 @@
     </div>
 </div>
 
-<div id="notFoundModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 hidden opacity-0 transition-opacity duration-300">
-    <div id="notFoundModalContent" class="bg-gray-800 rounded-lg shadow-2xl p-8 border border-yellow-500 transform scale-95 transition-transform duration-300 max-w-sm w-full text-center">
-        <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-yellow-900 border-2 border-yellow-400 mb-4 shadow-[0_0_15px_rgba(234,179,8,0.5)]">
-            <i class="fa-solid fa-triangle-exclamation text-3xl text-yellow-400 animate-pulse"></i>
+<div id="notFoundModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+    <div id="notFoundModalContent" class="glass-panel border-yellow-500/50 rounded-2xl shadow-[0_0_40px_rgba(234,179,8,0.2)] p-8 transform scale-95 transition-transform duration-300 max-w-sm w-full text-center relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-yellow-500/10 to-transparent pointer-events-none"></div>
+        <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-yellow-500/10 border border-yellow-500/50 mb-5 relative z-10">
+            <i class="fa-solid fa-triangle-exclamation text-2xl text-yellow-500 animate-pulse"></i>
         </div>
-        <h3 class="text-2xl font-bold text-white mb-2">Alert Unavailable</h3>
-        <p class="text-gray-400 mb-6 text-sm">Sorry, this specific alert has either been deleted or archived to Reports.</p>
-        <button onclick="closeNotFoundModal()" class="w-full bg-yellow-600 hover:bg-yellow-500 text-white font-bold py-2 px-4 rounded-lg transition shadow-lg">
+        <h3 class="text-xl font-bold text-white mb-2 font-display relative z-10">Alert Unavailable</h3>
+        <p class="text-gray-400 mb-6 text-sm relative z-10">This specific alert trace has either been deleted or archived.</p>
+        <button onclick="closeNotFoundModal()" class="relative z-10 w-full bg-yellow-500/20 hover:bg-yellow-500 hover:text-gray-900 border border-yellow-500/50 text-yellow-500 font-bold py-2.5 px-4 rounded-xl transition-all">
+            Acknowledge
+        </button>
+    </div>
+</div>
+
+<div id="fileRequiredModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+    <div id="fileRequiredModalContent" class="glass-panel border-red-500/50 rounded-2xl shadow-[0_0_40px_rgba(248,113,113,0.2)] p-8 transform scale-95 transition-transform duration-300 max-w-sm w-full text-center relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-red-500/10 to-transparent pointer-events-none"></div>
+        <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-500/10 border border-red-500/50 mb-5 relative z-10">
+            <i class="fa-solid fa-file-circle-xmark text-2xl text-red-500 animate-pulse"></i>
+        </div>
+        <h3 class="text-xl font-bold text-white mb-2 font-display relative z-10">Missing Input</h3>
+        <p class="text-gray-400 mb-6 text-sm relative z-10">Select a compatible log file before initiating analysis.</p>
+        <button onclick="closeFileRequiredModal()" class="relative z-10 w-full bg-red-500/20 hover:bg-red-500 hover:text-white border border-red-500/50 text-red-400 font-bold py-2.5 px-4 rounded-xl transition-all">
+            Acknowledge
+        </button>
+    </div>
+</div>
+
+<div id="errorModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+    <div id="errorModalContent" class="glass-panel border-red-500/50 rounded-2xl shadow-[0_0_40px_rgba(248,113,113,0.2)] p-8 transform scale-95 transition-transform duration-300 max-w-sm w-full text-center relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-red-500/10 to-transparent pointer-events-none"></div>
+        <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-500/10 border border-red-500/50 mb-5 relative z-10">
+            <i class="fa-solid fa-triangle-exclamation text-2xl text-red-500 animate-pulse"></i>
+        </div>
+        <h3 class="text-xl font-bold text-white mb-2 font-display relative z-10">Process Terminated</h3>
+        <p id="errorModalMessage" class="text-gray-400 mb-6 text-sm relative z-10">An error occurred.</p>
+        <button onclick="closeErrorModal()" class="relative z-10 w-full bg-red-500/20 hover:bg-red-500 hover:text-white border border-red-500/50 text-red-400 font-bold py-2.5 px-4 rounded-xl transition-all">
             Dismiss
         </button>
     </div>
 </div>
 
-<div id="fileRequiredModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 hidden opacity-0 transition-opacity duration-300">
-    <div id="fileRequiredModalContent" class="bg-gray-800 rounded-lg shadow-2xl p-8 border border-red-500 transform scale-95 transition-transform duration-300 max-w-sm w-full text-center">
-        <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-900 border-2 border-red-400 mb-4 shadow-[0_0_15px_rgba(248,113,113,0.5)]">
-            <i class="fa-solid fa-file-circle-xmark text-3xl text-red-400 animate-pulse"></i>
+<div id="successModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+    <div id="successModalContent" class="glass-panel border-cyber-matrix/50 rounded-2xl shadow-[0_0_40px_rgba(63,185,80,0.2)] p-8 transform scale-95 transition-transform duration-300 max-w-sm w-full text-center relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-cyber-matrix/10 to-transparent pointer-events-none"></div>
+        <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-cyber-matrix/10 border border-cyber-matrix/50 mb-5 relative z-10">
+            <i class="fa-solid fa-check-double text-2xl text-cyber-matrix animate-pulse"></i>
         </div>
-        <h3 class="text-2xl font-bold text-white mb-2">File Required</h3>
-        <p class="text-gray-400 mb-6 text-sm">Please select a security log file before starting the analysis.</p>
-        <button onclick="closeFileRequiredModal()" class="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-4 rounded-lg transition shadow-lg">
-            Dismiss
-        </button>
-    </div>
-</div>
-
-<div id="successModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 hidden opacity-0 transition-opacity duration-300">
-    <div id="successModalContent" class="bg-gray-800 rounded-lg shadow-2xl p-8 border border-green-500 transform scale-95 transition-transform duration-300 max-w-sm w-full text-center">
-        <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-900 border-2 border-green-400 mb-4 shadow-[0_0_15px_rgba(74,222,128,0.5)]">
-            <i class="fa-solid fa-check text-3xl text-green-400 animate-pulse"></i>
-        </div>
-        <h3 class="text-2xl font-bold text-white mb-2">Analysis Complete</h3>
-        <p class="text-gray-400 mb-6 text-sm">IntelliBlue successfully analyzed <span id="modalFilename" class="text-white font-semibold break-all"></span> and generated a threat report.</p>
+        <h3 class="text-xl font-bold text-white mb-2 font-display relative z-10">Analysis Complete</h3>
+        <p class="text-gray-400 mb-6 text-sm relative z-10">IntelliBlue successfully analyzed <span id="modalFilename" class="text-white font-mono bg-gray-800 px-1 rounded mx-1 break-all"></span>.</p>
         
-        <div class="flex flex-col space-y-3">
-            <a id="viewAlertBtn" href="#" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-4 rounded-lg transition shadow-lg flex items-center justify-center">
-                <i class="fa-solid fa-shield-halved mr-2"></i> View Actionable Alert
+        <div class="flex flex-col space-y-3 relative z-10">
+            <a id="viewAlertBtn" href="#" class="w-full bg-cyber-matrix/20 hover:bg-cyber-matrix hover:text-gray-900 border border-cyber-matrix/50 text-cyber-matrix font-bold py-3 px-4 rounded-xl transition-all flex items-center justify-center">
+                <i class="fa-solid fa-shield-halved mr-2"></i> View Actionable Threat
             </a>
-            <button onclick="closeModalAndReload()" class="w-full bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg transition border border-gray-600">
-                Close & Upload More
+            <button onclick="closeModalAndReload()" class="w-full bg-gray-800 hover:bg-gray-700 text-gray-300 font-semibold py-2 px-4 rounded-xl transition-all border border-gray-700">
+                Continue
             </button>
         </div>
     </div>
@@ -149,52 +187,19 @@
         }
     }
 
-    function showNotFoundModal() {
-        const modal = document.getElementById('notFoundModal');
-        const modalContent = document.getElementById('notFoundModalContent');
-        modal.classList.remove('hidden');
-        setTimeout(() => {
-            modal.classList.remove('opacity-0');
-            modalContent.classList.remove('scale-95');
-            modalContent.classList.add('scale-100');
-        }, 10);
-    }
-    
-    function closeNotFoundModal() {
-        const modal = document.getElementById('notFoundModal');
-        const modalContent = document.getElementById('notFoundModalContent');
-        modal.classList.add('opacity-0');
-        modalContent.classList.remove('scale-100');
-        modalContent.classList.add('scale-95');
-        setTimeout(() => modal.classList.add('hidden'), 300);
-    }
+    const showNotFoundModal = () => toggleGlobalModal('notFoundModal', true);
+    const closeNotFoundModal = () => toggleGlobalModal('notFoundModal', false);
+    const showFileRequiredModal = () => toggleGlobalModal('fileRequiredModal', true);
+    const closeFileRequiredModal = () => toggleGlobalModal('fileRequiredModal', false);
+    const closeErrorModal = () => toggleGlobalModal('errorModal', false);
 
-    function showFileRequiredModal() {
-        const modal = document.getElementById('fileRequiredModal');
-        const modalContent = document.getElementById('fileRequiredModalContent');
-        modal.classList.remove('hidden');
-        setTimeout(() => {
-            modal.classList.remove('opacity-0');
-            modalContent.classList.remove('scale-95');
-            modalContent.classList.add('scale-100');
-        }, 10);
-    }
-
-    function closeFileRequiredModal() {
-        const modal = document.getElementById('fileRequiredModal');
-        const modalContent = document.getElementById('fileRequiredModalContent');
-        modal.classList.add('opacity-0');
-        modalContent.classList.remove('scale-100');
-        modalContent.classList.add('scale-95');
-        setTimeout(() => modal.classList.add('hidden'), 300);
+    function showErrorModal(message) {
+        document.getElementById('errorModalMessage').textContent = message;
+        toggleGlobalModal('errorModal', true);
     }
 
     function closeModalAndReload() {
-        const modal = document.getElementById('successModal');
-        const modalContent = document.getElementById('successModalContent');
-        modal.classList.add('opacity-0');
-        modalContent.classList.remove('scale-100');
-        modalContent.classList.add('scale-95');
+        toggleGlobalModal('successModal', false);
         setTimeout(() => window.location.reload(), 300);
     }
 
@@ -248,7 +253,7 @@
                     modalContent.classList.add('scale-100');
                 }, 10);
             } else {
-                alert("Error: " + data.error);
+                showErrorModal("Error: " + data.error);
                 localStorage.removeItem('activeAnalysisId');
                 localStorage.removeItem('activeAnalysisFilename');
             }
@@ -256,7 +261,7 @@
             if (error.name === 'AbortError') {
                 console.log('Upload aborted by user');
             } else {
-                alert("Failed to connect to backend.");
+                showErrorModal("Failed to connect to backend.");
                 localStorage.removeItem('activeAnalysisId');
                 localStorage.removeItem('activeAnalysisFilename');
             }

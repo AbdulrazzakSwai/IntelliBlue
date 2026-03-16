@@ -15,24 +15,74 @@
     <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
                         display: ['"Space Grotesk"', 'sans-serif'],
+                        mono: ['"Fira Code"', 'monospace'],
                     },
                     colors: {
                         gray: {
-                            850: '#1f2937', 
-                            900: '#0f172a',
-                            800: '#1e293b',
-                            700: '#334155',
+                            950: '#010409',
+                            900: '#0d1117',
+                            850: '#161b22', 
+                            800: '#21262d',
+                            700: '#30363d',
+                            600: '#484f58',
                         },
                         cyber: {
-                            blue: '#0ea5e9',
-                            cyan: '#06b6d4',
-                            neon: '#38bdf8',
+                            blue: '#2f81f7',
+                            cyan: '#38bdf8',
+                            neon: '#58a6ff',
+                            purple: '#bc8cff',
+                            matrix: '#3fb950',
                         }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                        'slide-up': 'slideUp 0.5s ease-out forwards',
+                        'fade-in-left': 'fadeInLeft 0.5s ease-out forwards',
+                        'fade-in-right': 'fadeInRight 0.5s ease-out forwards',
+                        'pulse-glow': 'pulseGlow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'scanline': 'scanline 8s linear infinite',
+                        'blob': 'blob 7s infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        fadeInLeft: {
+                            '0%': { opacity: '0', transform: 'translateX(-30px)' },
+                            '100%': { opacity: '1', transform: 'translateX(0)' },
+                        },
+                        fadeInRight: {
+                            '0%': { opacity: '0', transform: 'translateX(30px)' },
+                            '100%': { opacity: '1', transform: 'translateX(0)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { opacity: '1', filter: 'drop-shadow(0 0 8px rgba(47, 129, 247, 0.6))' },
+                            '50%': { opacity: '0.7', filter: 'drop-shadow(0 0 15px rgba(56, 189, 248, 0.9))' },
+                        },
+                        scanline: {
+                            '0%': { transform: 'translateY(-100%)' },
+                            '100%': { transform: 'translateY(100vh)' },
+                        },
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        }
+                    },
+                    backgroundImage: {
+                        'grid-pattern': "url('data:image/svg+xml,%3Csvg width=\"20\" height=\"20\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cpath d=\"M20 0H0v20\" fill=\"none\" stroke=\"%23ffffff\" stroke-width=\"1\" stroke-opacity=\"0.05\"/%3E%3C/svg%3E')",
                     }
                 }
             }
@@ -47,83 +97,129 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #1f2937; }
-        ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #58a6ff; }
 
-        .prose code {
-            color: #ef4444 !important;
-            font-family: 'Courier New', Courier, monospace !important;
-            background-color: #111827 !important; 
-            padding: 0.2rem 0.4rem !important;
-            border-radius: 0.25rem !important;
-            font-weight: 500 !important;
+        body {
+            background-color: #040914;
+            background-image: radial-gradient(circle at 50% 0%, #101625 0%, transparent 70%);
         }
 
-        .prose code::before, .prose code::after {
-            content: none !important;
+        .glass-panel {
+            background: rgba(10, 15, 26, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(48, 54, 61, 0.4);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .neo-glow:hover {
+            box-shadow: 0 0 20px rgba(47, 129, 247, 0.15), inset 0 0 20px rgba(47, 129, 247, 0.05);
+            border-color: rgba(47, 129, 247, 0.4);
+        }
+
+        .noise-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        .prose code {
+            color: #ff7b72 !important;
+            font-family: 'Fira Code', 'Courier New', monospace !important;
+            background-color: rgba(22, 27, 34, 0.8) !important; 
+            padding: 0.2rem 0.4rem !important;
+            border-radius: 0.375rem !important;
+            border: 1px solid rgba(48, 54, 61, 0.5) !important;
+            font-size: 0.85em !important;
+        }
+
+        .prose code::before, .prose code::after { content: none !important; }
+
+        .prose pre {
+            background: #0d1117 !important;
+            border: 1px solid #30363d !important;
+            border-radius: 0.75rem !important;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
         }
 
         .prose pre code {
-            color: #e5e7eb !important;
+            color: #c9d1d9 !important;
             background-color: transparent !important;
+            border: none !important;
             padding: 0 !important;
-            font-weight: normal !important;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-            animation: fadeIn 0.4s ease-out forwards;
         }
     </style>
 </head>
-<body class="bg-gray-900 text-gray-200 font-sans flex h-screen overflow-hidden">
+<body class="bg-slate-950 text-gray-300 font-sans flex h-screen overflow-hidden selection:bg-cyber-blue/30 selection:text-white relative">
+    
+    <div class="noise-bg"></div>
+    <div class="fixed inset-0 bg-grid-pattern z-0 pointer-events-none opacity-20"></div>
+    
+    <div class="fixed top-[-10%] left-[-10%] w-96 h-96 bg-cyber-blue/10 rounded-full mix-blend-screen filter blur-[100px] animate-blob z-0 pointer-events-none"></div>
+    <div class="fixed top-[20%] right-[-10%] w-96 h-96 bg-cyber-purple/10 rounded-full mix-blend-screen filter blur-[100px] animate-blob animation-delay-2000 z-0 pointer-events-none"></div>
+    <div class="fixed bottom-[-20%] left-[20%] w-[500px] h-[500px] bg-cyber-matrix/5 rounded-full mix-blend-screen filter blur-[120px] animate-blob animation-delay-4000 z-0 pointer-events-none"></div>
 
-    <aside class="w-64 bg-gray-800 border-r border-gray-700 flex flex-col">
+    <aside class="w-[280px] glass-panel border-r border-gray-800 flex flex-col relative z-20 transition-all duration-300">
         
-        <div class="h-16 flex items-center px-6 border-b border-gray-700 bg-gray-900">
-            <img src="{{ url_for('static', filename='intelliblue_logo.png') }}" alt="IntelliBlue Logo" class="h-14 w-auto mr-0 drop-shadow-md pb-1">
-            <span class="text-xl font-bold tracking-wider text-white font-display uppercase shadow-cyber-blue drop-shadow-lg">IntelliBlue</span>
+        <div class="h-20 flex items-center px-6 border-b border-gray-800/80 relative overflow-hidden group">
+            <div class="absolute inset-0 bg-gradient-to-r from-cyber-blue/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <img src="{{ url_for('static', filename='intelliblue_logo.png') }}" alt="IntelliBlue Logo" class="h-12 w-auto mr-3 drop-shadow-[0_0_8px_rgba(88,166,255,0.5)] transition-transform duration-500 group-hover:scale-105">
+            <div class="flex flex-col justify-center">
+                <span class="text-xl font-bold tracking-widest text-white font-display uppercase bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400 drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">IntelliBlue</span>
+                <span class="text-[9px] text-cyber-blue font-mono uppercase tracking-[0.2em] font-semibold opacity-80">AI-Powered SOC Platform</span>
+            </div>
         </div>
         
-        <nav class="flex-1 px-4 py-6 flex flex-col min-h-0">
-            <div class="space-y-2 flex-shrink-0">
-                <a href="{{ url_for('dashboard') }}" class="flex items-center px-4 py-3 rounded-lg transition-colors {% if request.endpoint == 'dashboard' %}bg-gray-700 text-cyber-neon font-semibold shadow-lg{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %}">
-                    <i class="fa-solid fa-gauge-high w-6 drop-shadow-sm"></i> Dashboard
+        <nav class="flex-1 px-4 py-6 flex flex-col min-h-0 space-y-1">
+            <div class="space-y-1.5 flex-shrink-0">
+                <a href="{{ url_for('dashboard') }}" class="flex items-center px-4 py-3 rounded-xl transition-all duration-300 relative overflow-hidden group {% if request.endpoint == 'dashboard' %}bg-cyber-blue/10 border border-cyber-blue/30 text-white shadow-[0_0_15px_rgba(47,129,247,0.15)]{% else %}text-gray-400 hover:bg-gray-800 hover:text-white border border-transparent{% endif %}">
+                    {% if request.endpoint == 'dashboard' %}<div class="absolute left-0 top-0 bottom-0 w-1 bg-cyber-blue rounded-r-full shadow-[0_0_10px_#2f81f7]"></div>{% endif %}
+                    <i class="fa-solid fa-layer-group w-6 text-lg flex justify-center {% if request.endpoint == 'dashboard' %}text-cyber-blue drop-shadow-[0_0_8px_rgba(47,129,247,0.8)]{% else %}group-hover:text-gray-300{% endif %}"></i> 
+                    <span class="font-medium tracking-wide ml-3">Overview</span>
                 </a>
-                <a href="{{ url_for('logs') }}" class="flex items-center px-4 py-3 rounded-lg transition-colors {% if request.endpoint == 'logs' %}bg-gray-700 text-cyber-neon font-semibold shadow-lg{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %}">
-                    <i class="fa-solid fa-server w-6 drop-shadow-sm"></i> Log Management
+                <a href="{{ url_for('logs') }}" class="flex items-center px-4 py-3 rounded-xl transition-all duration-300 relative overflow-hidden group {% if request.endpoint == 'logs' %}bg-cyber-blue/10 border border-cyber-blue/30 text-white shadow-[0_0_15px_rgba(47,129,247,0.15)]{% else %}text-gray-400 hover:bg-gray-800 hover:text-white border border-transparent{% endif %}">
+                    {% if request.endpoint == 'logs' %}<div class="absolute left-0 top-0 bottom-0 w-1 bg-cyber-blue rounded-r-full shadow-[0_0_10px_#2f81f7]"></div>{% endif %}
+                    <i class="fa-solid fa-server w-6 text-lg flex justify-center {% if request.endpoint == 'logs' %}text-cyber-blue drop-shadow-[0_0_8px_rgba(47,129,247,0.8)]{% else %}group-hover:text-gray-300{% endif %}"></i> 
+                    <span class="font-medium tracking-wide ml-3">Data Ingestion</span>
                 </a>
-                <a href="{{ url_for('alerts') }}" class="flex items-center px-4 py-3 rounded-lg transition-colors {% if request.endpoint == 'alerts' %}bg-gray-700 text-cyber-neon font-semibold shadow-lg{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %}">
-                    <i class="fa-solid fa-triangle-exclamation w-6 text-yellow-500 fa-fade drop-shadow-sm" style="--fa-animation-duration: 3s;"></i> Active Alerts
+                <a href="{{ url_for('alerts') }}" class="flex items-center px-4 py-3 rounded-xl transition-all duration-300 relative overflow-hidden group {% if request.endpoint == 'alerts' %}bg-red-500/10 border border-red-500/30 text-white shadow-[0_0_15px_rgba(248,113,113,0.15)]{% else %}text-gray-400 hover:bg-gray-800 hover:text-white border border-transparent{% endif %}">
+                    {% if request.endpoint == 'alerts' %}<div class="absolute left-0 top-0 bottom-0 w-1 bg-red-500 rounded-r-full shadow-[0_0_10px_#ef4444]"></div>{% endif %}
+                    <i class="fa-solid fa-shield-virus w-6 text-lg flex justify-center {% if request.endpoint == 'alerts' %}text-red-400 animate-pulse drop-shadow-[0_0_8px_rgba(248,113,113,0.8)]{% endif %}"></i> 
+                    <span class="font-medium tracking-wide ml-3">Active Alerts</span>
                 </a>
-                <a href="{{ url_for('reports') }}" class="flex items-center px-4 py-3 rounded-lg transition-colors {% if request.endpoint == 'reports' %}bg-gray-700 text-cyber-neon font-semibold shadow-lg{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %}">
-                    <i class="fa-solid fa-file-shield w-6 drop-shadow-sm"></i> Archived Reports
+                <a href="{{ url_for('reports') }}" class="flex items-center px-4 py-3 rounded-xl transition-all duration-300 relative overflow-hidden group {% if request.endpoint == 'reports' %}bg-cyber-matrix/10 border border-cyber-matrix/30 text-white shadow-[0_0_15px_rgba(63,185,80,0.15)]{% else %}text-gray-400 hover:bg-gray-800 hover:text-white border border-transparent{% endif %}">
+                    {% if request.endpoint == 'reports' %}<div class="absolute left-0 top-0 bottom-0 w-1 bg-cyber-matrix rounded-r-full shadow-[0_0_10px_#3fb950]"></div>{% endif %}
+                    <i class="fa-solid fa-file-contract w-6 text-lg flex justify-center {% if request.endpoint == 'reports' %}text-cyber-matrix drop-shadow-[0_0_8px_rgba(63,185,80,0.8)]{% else %}group-hover:text-gray-300{% endif %}"></i> 
+                    <span class="font-medium tracking-wide ml-3">Archive & Reports</span>
                 </a>
             </div>
 
-            <div class="pt-6 pb-2 flex justify-between items-center px-4 flex-shrink-0">
-                <p class="text-xs uppercase text-gray-400 font-bold tracking-widest font-display">AI Assistant</p>
+            <div class="pt-8 pb-3 flex justify-between items-center px-2 flex-shrink-0">
+                <p class="text-[10px] uppercase text-gray-500 font-bold tracking-[0.2em] font-display">Copilot AI</p>
+                <div class="h-px bg-gray-800 flex-1 ml-4"></div>
             </div>
 
-            <a href="{{ url_for('new_chat') }}" class="flex-shrink-0 flex items-center justify-center px-4 py-3 rounded-lg transition-all duration-300 font-bold bg-gradient-to-r from-cyber-blue to-blue-600 hover:from-cyber-neon hover:to-cyber-blue text-white shadow-[0_0_15px_rgba(14,165,233,0.3)] hover:shadow-[0_0_20px_rgba(56,189,248,0.5)] mb-2 group">
-                <i class="fa-solid fa-plus mr-2 group-hover:rotate-90 transition-transform duration-300"></i> New Chat
+            <a href="{{ url_for('new_chat') }}" class="flex-shrink-0 flex items-center justify-center px-4 py-3 rounded-xl transition-all duration-300 font-bold bg-gray-800 border border-gray-700 hover:border-cyber-blue/50 text-white hover:shadow-[0_0_20px_rgba(47,129,247,0.2)] mb-3 group relative overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-r from-cyber-blue/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <i class="fa-solid fa-microchip text-cyber-blue mr-2 group-hover:animate-pulse-glow"></i> New AI Session
             </a>
 
-            <div class="px-2 mt-2 space-y-1 flex-1 overflow-y-auto min-h-0">
+            <div class="px-1 mt-1 space-y-1 flex-1 overflow-y-auto min-h-0 custom-scrollbar pr-1">
                 {% for s in global_chat_sessions %}
-                <div class="group relative flex items-center">
-                    <a href="{{ url_for('chat', session_id=s.id) }}" id="sidebar-session-{{ s.id }}" class="flex-1 flex items-center px-3 py-2 pr-8 text-xs rounded-md transition-colors w-full overflow-hidden {% if request.view_args and request.view_args.get('session_id') == s.id %}bg-gray-700 text-cyber-neon font-semibold border border-gray-600{% else %}text-gray-400 hover:bg-gray-700 hover:text-white border border-transparent{% endif %}">
-                        <i class="fa-regular fa-comments mr-2 text-gray-500 shrink-0 group-hover:text-cyber-blue transition-colors"></i>
-                        <span class="truncate block w-full sidebar-title-text">{{ s.title }}</span>
+                <div class="group relative flex items-center bg-transparent hover:bg-gray-800/80 rounded-lg transition-colors border border-transparent hover:border-gray-700">
+                    <a href="{{ url_for('chat', session_id=s.id) }}" id="sidebar-session-{{ s.id }}" class="flex-1 flex items-center px-3 py-2.5 pr-8 text-xs rounded-md transition-all w-full overflow-hidden {% if request.view_args and request.view_args.get('session_id') == s.id %}text-cyber-neon font-medium{% else %}text-gray-400{% endif %}">
+                        <i class="fa-solid fa-robot mr-2.5 opacity-50 text-[10px] {% if request.view_args and request.view_args.get('session_id') == s.id %}text-cyber-blue opacity-100 drop-shadow-[0_0_5px_rgba(47,129,247,0.6)]{% endif %} group-hover:text-white group-hover:opacity-100 transition-all"></i>
+                        <span class="truncate block w-full sidebar-title-text tracking-wide">{{ s.title }}</span>
                     </a>
                     <form action="{{ url_for('delete_chat', session_id=s.id) }}" method="POST" class="absolute right-2 opacity-0 group-hover:opacity-100 transition-opacity" onsubmit="showDeleteModal(event, this, 'Are you sure you want to permanently delete this chat?');">
-                        <button type="submit" class="text-gray-500 hover:text-red-400 transition-colors cursor-pointer" title="Delete Chat">
-                            <i class="fa-solid fa-trash-can"></i>
+                        <button type="submit" class="text-gray-500 hover:text-red-400 transition-colors cursor-pointer w-6 h-6 flex items-center justify-center rounded hover:bg-red-500/10" title="Delete Session">
+                            <i class="fa-solid fa-xmark text-sm"></i>
                         </button>
                     </form>
                 </div>
@@ -131,28 +227,43 @@
             </div>
         </nav>
         
-        <div class="p-4 border-t border-gray-700 text-xs text-gray-500 text-center font-display tracking-wide">
-            System Status: <span class="text-cyber-neon font-semibold drop-shadow-[0_0_5px_rgba(56,189,248,0.8)]"><i class="fa-solid fa-circle-dot fa-beat-fade text-[10px] mr-1" style="--fa-animation-duration: 2s;"></i>Online</span>
+        <div class="p-5 border-t border-gray-800 bg-gray-900/50 backdrop-blur">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="relative flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyber-matrix opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-cyber-matrix shadow-[0_0_8px_#3fb950]"></span>
+                    </div>
+                    <div>
+                        <p class="text-[10px] text-gray-400 uppercase tracking-wider font-display font-bold">System Status</p>
+                        <p class="text-xs text-white font-medium">All Systems Operational</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </aside>
 
-    <main class="flex-1 flex flex-col h-screen overflow-hidden">
+    <main class="flex-1 flex flex-col h-screen overflow-hidden relative z-10 w-full">
         
-        <header class="h-16 bg-gray-900 border-b border-gray-700 flex items-center justify-between px-8 shadow-sm relative z-10">
-            <h2 class="text-2xl font-bold font-display text-transparent bg-clip-text bg-gradient-to-r from-gray-100 to-gray-400">
+        <header class="h-20 border-b border-gray-800/80 glass-panel flex items-center justify-between px-10 relative z-20 shadow-sm">
+            <div class="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-gray-700 to-transparent opacity-50"></div>
+            <h2 class="text-2xl font-bold font-display text-white tracking-wide flex items-center">
                 {% block title %}Dashboard{% endblock %}
             </h2>
-            <div class="flex items-center relative">
-                <i class="fa-solid fa-microchip text-cyber-blue absolute left-3 z-10 pointer-events-none"></i>
-                <select id="model-selector" class="text-sm font-medium text-gray-400 font-display flex items-center bg-gray-800 pl-10 pr-8 py-1 rounded-full border border-gray-700 focus:outline-none focus:border-cyber-blue transition-colors w-60 appearance-none cursor-pointer">
-                    <option value="llama3" {% if active_model == 'llama3' %}selected{% endif %}>Llama 3 (Thinking)</option>
-                    <option value="llama3.2" {% if active_model == 'llama3.2' %}selected{% endif %}>Llama 3.2 (Fast)</option>
-                </select>
-                <i class="fa-solid fa-chevron-down text-gray-500 absolute right-3 text-xs z-10 pointer-events-none"></i>
+            <div class="flex items-center gap-6">
+                <div class="flex items-center relative group">
+                    <div class="absolute inset-0 bg-cyber-blue/20 blur-md rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <i class="fa-solid fa-microchip text-cyber-blue absolute left-4 z-20 pointer-events-none text-sm group-hover:drop-shadow-[0_0_8px_rgba(47,129,247,0.8)] transition-all"></i>
+                    <select id="model-selector" class="text-sm font-medium text-gray-300 font-display flex items-center bg-gray-850/80 hover:bg-gray-800 pl-11 pr-10 py-2.5 rounded-full border border-gray-700 focus:outline-none focus:border-cyber-blue transition-all w-68 appearance-none cursor-pointer shadow-inner relative z-10">
+                        <option value="llama3" {% if active_model == 'llama3' %}selected{% endif %}>Llama 3 (Deep Analysis)</option>
+                        <option value="llama3.2" {% if active_model == 'llama3.2' %}selected{% endif %}>Llama 3.2 (Fast Response)</option>
+                    </select>
+                    <i class="fa-solid fa-chevron-down absolute right-4 z-20 text-gray-500 pointer-events-none text-xs"></i>
+                </div>
             </div>
         </header>
 
-        <div class="flex-1 overflow-y-auto p-8 bg-gray-850 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-800 via-gray-900 to-black">
+        <div class="flex-1 overflow-y-auto p-8 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#0a101f] to-[#040914]">
             {% block content %}
             {% endblock %}
         </div>
@@ -167,7 +278,7 @@
             <p id="customDeleteModalMsg" class="text-gray-400 text-sm mb-6"></p>
             <div class="flex justify-center space-x-4">
                 <button onclick="cancelDelete()" type="button" class="px-5 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-semibold transition">Cancel</button>
-                <button onclick="confirmDelete()" type="button" class="px-5 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg font-semibold transition shadow-lg shadow-red-500/30">Clear</button>
+                <button onclick="confirmDelete()" type="button" class="px-5 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg font-semibold transition shadow-lg shadow-red-500/30">Delete</button>
             </div>
         </div>
     </div>
@@ -175,29 +286,38 @@
     <script>
         let formToSubmit = null;
 
+        function toggleGlobalModal(modalId, show) {
+            const modal = document.getElementById(modalId);
+            if (!modal) return;
+            const content = modal.querySelector('.modal-content') || document.getElementById(modalId + 'Content');
+            if (show) {
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    if (content) {
+                        content.classList.remove('scale-95', 'opacity-0');
+                        content.classList.add('scale-100', 'opacity-100');
+                    }
+                }, 10);
+            } else {
+                modal.classList.add('opacity-0');
+                if (content) {
+                    content.classList.remove('scale-100', 'opacity-100');
+                    content.classList.add('scale-95', 'opacity-0');
+                }
+                setTimeout(() => modal.classList.add('hidden'), 300);
+            }
+        }
+
         function showDeleteModal(event, formElement, message) {
             event.preventDefault();
-
-            const modal = document.getElementById('customDeleteModal');
-            const msgEl = document.getElementById('customDeleteModalMsg');
-            msgEl.textContent = message;
-            
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                modal.querySelector('.modal-content').classList.remove('scale-95', 'opacity-0');
-                modal.querySelector('.modal-content').classList.add('scale-100', 'opacity-100');
-            }, 10);
-
+            document.getElementById('customDeleteModalMsg').textContent = message;
+            toggleGlobalModal('customDeleteModal', true);
             formToSubmit = formElement;
         }
 
         function cancelDelete() {
-            const modal = document.getElementById('customDeleteModal');
-            modal.querySelector('.modal-content').classList.remove('scale-100', 'opacity-100');
-            modal.querySelector('.modal-content').classList.add('scale-95', 'opacity-0');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-            }, 200);
+            toggleGlobalModal('customDeleteModal', false);
             formToSubmit = null;
         }
 
@@ -207,12 +327,22 @@
             }
         }
     </script>
+    <div id="modelSwitchPopup" class="fixed bottom-6 right-6 bg-gray-900 border border-cyber-blue shadow-[0_0_15px_rgba(47,129,247,0.4)] text-white px-5 py-3 rounded-xl flex items-center space-x-3 transition-all duration-300 transform translate-y-24 opacity-0 z-[100]">
+        <i class="fa-solid fa-circle-notch fa-spin text-cyber-blue"></i>
+        <span class="font-display tracking-wide text-sm font-semibold">Switching model...</span>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const selector = document.getElementById('model-selector');
+            const popup = document.getElementById('modelSwitchPopup');
 
             selector.addEventListener('change', async (e) => {
                 const model = e.target.value;
+                
+                popup.classList.remove('translate-y-24', 'opacity-0');
+                popup.classList.add('translate-y-0', 'opacity-100');
+
                 try {
                     const res = await fetch('/api/set_model', {
                         method: 'POST',
@@ -221,11 +351,21 @@
                     });
                     const data = await res.json();
                     if (data.status === 'pulling') {
-                        alert(data.message);
+                        popup.querySelector('span').textContent = data.message || "Downloading model...";
                     }
-                    window.location.reload();
+                    
+                    popup.querySelector('i').className = "fa-solid fa-check text-green-500";
+                    popup.querySelector('span').textContent = "Model activated successfully";
+                    popup.classList.replace('border-cyber-blue', 'border-green-500');
+                    popup.classList.replace('shadow-[0_0_15px_rgba(47,129,247,0.4)]', 'shadow-[0_0_15px_rgba(34,197,94,0.4)]');
+                    
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 800);
                 } catch (e) {
                     console.error("Failed to set model", e);
+                    popup.classList.remove('translate-y-0', 'opacity-100');
+                    popup.classList.add('translate-y-24', 'opacity-0');
                 }
             });
         });

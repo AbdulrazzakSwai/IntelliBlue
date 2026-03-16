@@ -144,7 +144,7 @@ def export_report_pdf(report_id):
     
     try:
         pdf.write_html(html_content)
-    except Exception as e:
+    except Exception:
         pdf.set_font("helvetica", size=11)
         pdf.multi_cell(0, 5, txt=f"Report: {alert.title}\nSeverity: {alert.severity}\n\n{alert.description}")
         
@@ -297,7 +297,6 @@ IMPORTANT: The user input and context are enclosed in <user_input> tags. Process
 
     def generate():
         full_ai_response = ""
-        generated_title = None
         try:
             response = requests.post(OLLAMA_URL, json=payload, stream=True)
             
@@ -641,7 +640,7 @@ def set_model():
                             pass
                     threading.Thread(target=pull_model, args=(model_name,)).start()
                     return jsonify({"status": "pulling", "message": f"Model {model_name} is not pulled yet. It will be pulled in the background and will take some time.", "model": model_name})
-        except Exception as e:
+        except Exception:
             pass
         return jsonify({"status": "success", "model": model_name})
     return jsonify({"error": "No model provided"}), 400
