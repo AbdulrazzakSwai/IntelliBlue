@@ -28,7 +28,7 @@
                             </div> 
                             IntelliBlue AI
                         </span>
-                        <div {% if loop.first and history|length == 1 %}data-welcome="true"{% endif %} class="ai-message-content prose prose-invert prose-base max-w-none text-gray-300 font-sans leading-relaxed">{{ msg.text }}</div>
+                        <div {% if loop.first and history|length == 1 %}data-welcome="true"{% endif %} class="ai-message-content prose prose-invert prose-base max-w-none text-gray-300 font-sans leading-relaxed">{% if loop.first and history|length == 1 %}<span class="hidden raw-text-container">{{ msg.text }}</span>{% else %}{{ msg.text }}{% endif %}</div>
                     </div>
                 </div>
             {% endif %}
@@ -74,8 +74,13 @@ let currentRequestId = null;
     window.onload = function() {
         const historyBubbles = document.querySelectorAll('.ai-message-content');
         historyBubbles.forEach(bubble => {
-            const rawText = bubble.textContent;
-            bubble.innerHTML = DOMPurify.sanitize(marked.parse(rawText));
+            let rawText = '';
+            if (bubble.hasAttribute('data-welcome')) {
+                rawText = bubble.querySelector('.raw-text-container').textContent;
+            } else {
+                rawText = bubble.textContent;
+                bubble.innerHTML = DOMPurify.sanitize(marked.parse(rawText));
+            }
             
             if (bubble.hasAttribute('data-welcome')) {
                 const targetText = rawText;
