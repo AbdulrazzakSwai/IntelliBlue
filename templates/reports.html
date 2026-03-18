@@ -8,18 +8,20 @@
         <i class="fa-solid fa-folder-open text-cyber-blue mr-3 drop-shadow-[0_0_8px_rgba(14,165,233,0.8)]"></i> Archived Reports
     </h3>
     <div class="flex gap-3 animate-fade-in-right">
-        <div class="relative">
-            <select id="severityFilter" onchange="filterItems()" class="bg-gray-800 border border-gray-600 text-gray-300 text-sm rounded-lg px-4 py-2.5 outline-none focus:border-cyber-blue transition-colors appearance-none pr-10 font-display">
+        <div class="relative group">
+            <div class="absolute inset-0 bg-cyber-blue/20 blur-md rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <select id="severityFilter" onchange="filterItems()" class="relative z-10 bg-gray-900/80 backdrop-blur-md border border-gray-700 text-gray-300 text-sm rounded-lg px-4 py-2.5 outline-none focus:border-cyber-blue transition-colors appearance-none pr-10 font-display shadow-inner cursor-pointer hover:bg-gray-800">
                 <option value="all">All Severities</option>
                 <option value="Critical">Critical</option>
                 <option value="High">High</option>
                 <option value="Medium">Medium</option>
                 <option value="Low">Low</option>
             </select>
-            <i class="fa-solid fa-chevron-down absolute right-3 top-3.5 text-gray-500 text-xs pointer-events-none"></i>
+            <i class="fa-solid fa-chevron-down absolute right-3 top-3.5 text-gray-500 text-xs pointer-events-none z-10"></i>
         </div>
-        <div class="relative">
-            <select id="filetypeFilter" onchange="filterItems()" class="bg-gray-800 border border-gray-600 text-gray-300 text-sm rounded-lg px-4 py-2.5 outline-none focus:border-cyber-blue transition-colors appearance-none pr-10 font-display">
+        <div class="relative group">
+            <div class="absolute inset-0 bg-cyber-blue/20 blur-md rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <select id="filetypeFilter" onchange="filterItems()" class="relative z-10 bg-gray-900/80 backdrop-blur-md border border-gray-700 text-gray-300 text-sm rounded-lg px-4 py-2.5 outline-none focus:border-cyber-blue transition-colors appearance-none pr-10 font-display shadow-inner cursor-pointer hover:bg-gray-800">
                 <option value="all">All File Types</option>
                 <option value="pcap">PCAP/PCAPNG</option>
                 <option value="csv">CSV</option>
@@ -27,7 +29,7 @@
                 <option value="txt">TXT</option>
                 <option value="log">LOG</option>
             </select>
-            <i class="fa-solid fa-chevron-down absolute right-3 top-3.5 text-gray-500 text-xs pointer-events-none"></i>
+            <i class="fa-solid fa-chevron-down absolute right-3 top-3.5 text-gray-500 text-xs pointer-events-none z-10"></i>
         </div>
     </div>
 </div>
